@@ -1,6 +1,8 @@
 #pragma once
 
-#include    <SFML/Graphics.hpp>
+#include "stdafx.h"
+
+class Ente;
 
 class GerenciadorGrafico{
     private:
@@ -10,3 +12,4 @@ class GerenciadorGrafico{
         GerenciadorGrafico();
         ~GerenciadorGrafico();
         void desenharEnte(Ente* pE);
+};

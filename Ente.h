@@ -13,6 +13,10 @@ class Ente{
     public:
         Ente();
         virtual ~Ente();
+
+        virtual void executar() =0;
+
+        sf::RectangleShape* getForma();
         void desenhar();
         static void setGG(GerenciadorGrafico *GG);
 

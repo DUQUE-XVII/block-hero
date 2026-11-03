@@ -2,11 +2,12 @@
 #define _STDAFX_H
 
 
-#include<stdio.h>
-#include <string.h>
-#include <iostream>
-#include <fstream>
-#include <string>
+#include    <stdio.h>
+#include    <string.h>
+#include    <iostream>
+#include    <fstream>
+#include    <string>
+#include    <SFML/Graphics.hpp>
 
 using namespace std;
 using std::cout;

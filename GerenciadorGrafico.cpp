@@ -1,4 +1,5 @@
-#include "GerenciadorGrafico.h"
+#include    "GerenciadorGrafico.h"
+#include    "Ente.h"
 
 GerenciadorGrafico::GerenciadorGrafico(){
 }
@@ -6,7 +7,7 @@ GerenciadorGrafico::GerenciadorGrafico(){
 GerenciadorGrafico::~GerenciadorGrafico(){
 }
 
-GerenciadorGrafico::desenharEnte(Ente* pE){
+void GerenciadorGrafico::desenharEnte(Ente* pE){
 
 
 }
