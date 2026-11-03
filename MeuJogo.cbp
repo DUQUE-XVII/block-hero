@@ -39,6 +39,9 @@
 			<Add library="sfml-system" />
 			<Add directory="C:/Dev/SFML/SFML-3.1.0/lib" />
 		</Linker>
+		<Unit filename="Ente.h" />
+		<Unit filename="GerenciadorGrafico.cpp" />
+		<Unit filename="GerenciadorGrafico.h" />
 		<Unit filename="Jogo.cpp" />
 		<Unit filename="Jogo.h" />
 		<Unit filename="stdafx.h" />
