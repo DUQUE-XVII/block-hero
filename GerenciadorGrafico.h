@@ -11,5 +11,6 @@ class GerenciadorGrafico{
     public:
         GerenciadorGrafico();
         ~GerenciadorGrafico();
-        void desenharEnte(Ente* pE);
+        void desenharEnte(Ente* pE = NULL);
+        sf::RenderWindow& getJanela();
 };

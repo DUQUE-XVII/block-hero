@@ -1,18 +1,20 @@
 #pragma once
 
 #include    "stdafx.h"
+#include    "GerenciadorGrafico.h"
 
-class jogo{
+
+class Jogo{
 
     private:
 
-        Jogador pJog1;
+        //Jogador pJog1;
         GerenciadorGrafico pGG;
 
     public:
 
-        jogo();
-        ~jogo();
+        Jogo();
+        ~Jogo();
         void executar();
 
 };

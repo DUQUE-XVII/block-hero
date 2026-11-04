@@ -1,6 +1,9 @@
 #include    "Ente.h"
 
+GerenciadorGrafico* Ente::pGG = nullptr;
+
 Ente::Ente(){
+
 }
 
 Ente::~Ente(){
