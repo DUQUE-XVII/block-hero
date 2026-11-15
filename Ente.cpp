@@ -1,12 +1,15 @@
 #include    "Ente.h"
 
 GerenciadorGrafico* Ente::pGG = nullptr;
-
-Ente::Ente(){
-
+Ente::Ente()
+{
+    retangulo = new sf::RectangleShape();
 }
 
-Ente::~Ente(){
+Ente::~Ente()
+{
+    delete retangulo;
+    retangulo = nullptr;
 }
 
 void Ente::executar(){

@@ -1,18 +1,24 @@
 # depslib dependency file v1.0
-1793752388 source:c:\users\joaol\desktop\meujogo\ente.cpp
+1794172810 source:c:\users\joaol\desktop\meujogo\ente.cpp
 	"Ente.h"
 
 1793752295 c:\users\joaol\desktop\meujogo\ente.h
 	"stdafx.h"
 	"GerenciadorGrafico.h"
 
-1793670455 c:\users\joaol\desktop\meujogo\stdafx.h
+1794591407 c:\users\joaol\desktop\meujogo\stdafx.h
 	<stdio.h>
 	<string.h>
 	<iostream>
 	<fstream>
 	<string>
 	<SFML/Graphics.hpp>
+	<sstream>
+	<SFML/Window/Keyboard.hpp>
+	<vector>
+	<list>
+	<set>
+	<cmath>
 
 1776350337 c:\dev\sfml\sfml-3.1.0\include\sfml\graphics.hpp
 	<SFML/Graphics/BlendMode.hpp>
@@ -554,19 +560,108 @@
 1793752977 c:\users\joaol\desktop\meujogo\gerenciadorgrafico.h
 	"stdafx.h"
 
-1793752963 source:c:\users\joaol\desktop\meujogo\gerenciadorgrafico.cpp
-	"GerenciadorGrafico.h"
-	"Ente.h"
+1794616398 source:c:\users\joaol\desktop\meujogo\gerenciadorgrafico.cpp
 	"GerenciadorGrafico.h"
 	"Ente.h"
 
-1793752839 source:c:\users\joaol\desktop\meujogo\jogo.cpp
+1794693104 source:c:\users\joaol\desktop\meujogo\jogo.cpp
 	"Jogo.h"
+	"Projetil_Acido.h"
 
-1793752214 c:\users\joaol\desktop\meujogo\jogo.h
+1794693091 c:\users\joaol\desktop\meujogo\jogo.h
 	"stdafx.h"
 	"GerenciadorGrafico.h"
+	"Jogador.h"
+	"Ente.h"
+	"Plataforma.h"
+	"Gerenciador_CL.h"
+	"Capanga_Cogumelo.h"
+	"Planta_Acida.h"
+	"Boitata.h"
 
 1793752468 source:c:\users\joaol\desktop\meujogo\main.cpp
 	"Jogo.h"
+
+1794170272 source:c:\users\joaol\desktop\meujogo\entidade.cpp
+	"Entidade.h"
+
+1794618655 c:\users\joaol\desktop\meujogo\entidade.h
+	"Ente.h"
+
+1794691843 c:\users\joaol\desktop\meujogo\jogador.h
+	"Personagem.h"
+	"stdafx.h"
+
+1794667131 c:\users\joaol\desktop\meujogo\personagem.h
+	"Entidade.h"
+
+1794691843 source:c:\users\joaol\desktop\meujogo\jogador.cpp
+	"Jogador.h"
+	"Plataforma.h"
+
+1794667131 source:c:\users\joaol\desktop\meujogo\personagem.cpp
+	"Personagem.h"
+
+1794617229 c:\users\joaol\desktop\meujogo\plataforma.h
+	"Obstaculo.h"
+	"Gerenciador_CL.h"
+
+1794175258 c:\users\joaol\desktop\meujogo\obstaculo.h
+	"stdafx.h"
+	"Entidade.h"
+
+1794618090 source:c:\users\joaol\desktop\meujogo\plataforma.cpp
+	"Plataforma.h"
+	"Jogador.h"
+
+1794175272 source:c:\users\joaol\desktop\meujogo\obstaculo.cpp
+	"Obstaculo.h"
+
+1794691843 source:c:\users\joaol\desktop\meujogo\gerenciador_cl.cpp
+	"Gerenciador_CL.h"
+	"Projetil_Acido.h"
+
+1794691843 c:\users\joaol\desktop\meujogo\gerenciador_cl.h
+	"Jogador.h"
+	"GerenciadorGrafico.h"
+	"stdafx.h"
+	"Entidade.h"
+	"Obstaculo.h"
+	"CriaturaHostil.h"
+
+1794667131 c:\users\joaol\desktop\meujogo\criaturahostil.h
+	"Jogador.h"
+	"stdafx.h"
+	"Personagem.h"
+
+1794670419 c:\users\joaol\desktop\meujogo\capanga_cogumelo.h
+	"CriaturaHostil.h"
+	"stdafx.h"
+	"Jogador.h"
+
+1794667131 source:c:\users\joaol\desktop\meujogo\criaturahostil.cpp
+	"CriaturaHostil.h"
+
+1794670419 source:c:\users\joaol\desktop\meujogo\capanga_cogumelo.cpp
+	"Capanga_Cogumelo.h"
+	"Jogador.h"
+
+1794691843 c:\users\joaol\desktop\meujogo\planta_acida.h
+	"CriaturaHostil.h"
+
+1794701176 c:\users\joaol\desktop\meujogo\projetil_acido.h
+	"Entidade.h"
+
+1794693091 c:\users\joaol\desktop\meujogo\boitata.h
+	"CriaturaHostil.h"
+
+1794691843 source:c:\users\joaol\desktop\meujogo\planta_acida.cpp
+	"Planta_Acida.h"
+	"Projetil_Acido.h"
+	"Jogador.h"
+
+1794693091 source:c:\users\joaol\desktop\meujogo\boitata.cpp
+	"Boitata.h"
+	"Projetil_Acido.h"
+	"Jogador.h"
 

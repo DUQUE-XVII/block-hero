@@ -4,10 +4,21 @@
 
 #include    <stdio.h>
 #include    <string.h>
+
 #include    <iostream>
 #include    <fstream>
+
 #include    <string>
 #include    <SFML/Graphics.hpp>
+
+#include    <sstream>
+#include    <SFML/Window/Keyboard.hpp>
+
+#include    <vector>
+#include    <list>
+
+#include    <set>
+#include    <cmath>
 
 using namespace std;
 using std::cout;

@@ -1,13 +1,10 @@
 #include    "GerenciadorGrafico.h"
 #include    "Ente.h"
 
-#include "GerenciadorGrafico.h"
-#include "Ente.h"
-
 GerenciadorGrafico::GerenciadorGrafico()
     : obj(sf::VideoMode({800, 600}), "BLOCK HERO")
 {
-
+      obj.setFramerateLimit(60);
 }
 
 GerenciadorGrafico::~GerenciadorGrafico(){

@@ -39,12 +39,27 @@
 			<Add library="sfml-system" />
 			<Add directory="C:/Dev/SFML/SFML-3.1.0/lib" />
 		</Linker>
+		<Unit filename="CriaturaHostil.cpp" />
+		<Unit filename="CriaturaHostil.h" />
 		<Unit filename="Ente.cpp" />
 		<Unit filename="Ente.h" />
+		<Unit filename="Entidade.cpp" />
+		<Unit filename="Entidade.h" />
 		<Unit filename="GerenciadorGrafico.cpp" />
 		<Unit filename="GerenciadorGrafico.h" />
+		<Unit filename="Gerenciador_CL.cpp" />
+		<Unit filename="Gerenciador_CL.h" />
+		<Unit filename="Jogador.cpp" />
+		<Unit filename="Jogador.h" />
 		<Unit filename="Jogo.cpp" />
 		<Unit filename="Jogo.h" />
+		<Unit filename="Obstaculo.cpp" />
+		<Unit filename="Obstaculo.h" />
+		<Unit filename="Personagem.cpp" />
+		<Unit filename="Personagem.h" />
+		<Unit filename="Plataforma.cpp" />
+		<Unit filename="Plataforma.h" />
+		<Unit filename="Projetil.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="stdafx.h" />
 		<Extensions>
