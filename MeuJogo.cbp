@@ -39,6 +39,10 @@
 			<Add library="sfml-system" />
 			<Add directory="C:/Dev/SFML/SFML-3.1.0/lib" />
 		</Linker>
+		<Unit filename="Boitata.cpp" />
+		<Unit filename="Boitata.h" />
+		<Unit filename="Capanga_Cogumelo.cpp" />
+		<Unit filename="Capanga_Cogumelo.h" />
 		<Unit filename="CriaturaHostil.cpp" />
 		<Unit filename="CriaturaHostil.h" />
 		<Unit filename="Ente.cpp" />
@@ -53,13 +57,18 @@
 		<Unit filename="Jogador.h" />
 		<Unit filename="Jogo.cpp" />
 		<Unit filename="Jogo.h" />
+		<Unit filename="Lista.h" />
+		<Unit filename="ListaEntidade.h" />
 		<Unit filename="Obstaculo.cpp" />
 		<Unit filename="Obstaculo.h" />
 		<Unit filename="Personagem.cpp" />
 		<Unit filename="Personagem.h" />
+		<Unit filename="Planta_Acida.cpp" />
+		<Unit filename="Planta_Acida.h" />
 		<Unit filename="Plataforma.cpp" />
 		<Unit filename="Plataforma.h" />
-		<Unit filename="Projetil.h" />
+		<Unit filename="Projetil_Acido.cpp" />
+		<Unit filename="Projetil_Acido.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="stdafx.h" />
 		<Extensions>
