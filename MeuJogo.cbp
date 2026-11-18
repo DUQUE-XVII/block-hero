@@ -31,46 +31,53 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-std=gnu++17" />
-			<Add directory="C:/Dev/SFML/SFML-3.1.0/include" />
+			<Add directory="include" />
+			<Add directory="external/SFML/include" />
 		</Compiler>
 		<Linker>
 			<Add library="sfml-graphics" />
 			<Add library="sfml-window" />
 			<Add library="sfml-system" />
-			<Add directory="C:/Dev/SFML/SFML-3.1.0/lib" />
+			<Add directory="external/SFML/lib" />
 		</Linker>
-		<Unit filename="Boitata.cpp" />
-		<Unit filename="Boitata.h" />
-		<Unit filename="Capanga_Cogumelo.cpp" />
-		<Unit filename="Capanga_Cogumelo.h" />
-		<Unit filename="CriaturaHostil.cpp" />
-		<Unit filename="CriaturaHostil.h" />
-		<Unit filename="Ente.cpp" />
-		<Unit filename="Ente.h" />
-		<Unit filename="Entidade.cpp" />
-		<Unit filename="Entidade.h" />
-		<Unit filename="GerenciadorGrafico.cpp" />
-		<Unit filename="GerenciadorGrafico.h" />
-		<Unit filename="Gerenciador_CL.cpp" />
-		<Unit filename="Gerenciador_CL.h" />
-		<Unit filename="Jogador.cpp" />
-		<Unit filename="Jogador.h" />
-		<Unit filename="Jogo.cpp" />
-		<Unit filename="Jogo.h" />
-		<Unit filename="Lista.h" />
-		<Unit filename="ListaEntidade.h" />
-		<Unit filename="Obstaculo.cpp" />
-		<Unit filename="Obstaculo.h" />
-		<Unit filename="Personagem.cpp" />
-		<Unit filename="Personagem.h" />
-		<Unit filename="Planta_Acida.cpp" />
-		<Unit filename="Planta_Acida.h" />
-		<Unit filename="Plataforma.cpp" />
-		<Unit filename="Plataforma.h" />
-		<Unit filename="Projetil_Acido.cpp" />
-		<Unit filename="Projetil_Acido.h" />
-		<Unit filename="main.cpp" />
-		<Unit filename="stdafx.h" />
+		<Unit filename="include/Boitata.h" />
+		<Unit filename="include/Capanga_Cogumelo.h" />
+		<Unit filename="include/CriaturaHostil.h" />
+		<Unit filename="include/Ente.h" />
+		<Unit filename="include/Entidade.h" />
+		<Unit filename="include/Fase.h" />
+		<Unit filename="include/Fase_Boss.h" />
+		<Unit filename="include/Fase_Forest.h" />
+		<Unit filename="include/GerenciadorGrafico.h" />
+		<Unit filename="include/Gerenciador_CL.h" />
+		<Unit filename="include/Jogador.h" />
+		<Unit filename="include/Jogo.h" />
+		<Unit filename="include/Lista.h" />
+		<Unit filename="include/ListaEntidade.h" />
+		<Unit filename="include/Obstaculo.h" />
+		<Unit filename="include/Personagem.h" />
+		<Unit filename="include/Planta_Acida.h" />
+		<Unit filename="include/Plataforma.h" />
+		<Unit filename="include/Projetil_Acido.h" />
+		<Unit filename="include/stdafx.h" />
+		<Unit filename="src/Boitata.cpp" />
+		<Unit filename="src/Capanga_Cogumelo.cpp" />
+		<Unit filename="src/CriaturaHostil.cpp" />
+		<Unit filename="src/Ente.cpp" />
+		<Unit filename="src/Entidade.cpp" />
+		<Unit filename="src/Fase.cpp" />
+		<Unit filename="src/Fase_Boss.cpp" />
+		<Unit filename="src/Fase_Forest.cpp" />
+		<Unit filename="src/GerenciadorGrafico.cpp" />
+		<Unit filename="src/Gerenciador_CL.cpp" />
+		<Unit filename="src/Jogador.cpp" />
+		<Unit filename="src/Jogo.cpp" />
+		<Unit filename="src/Obstaculo.cpp" />
+		<Unit filename="src/Personagem.cpp" />
+		<Unit filename="src/Planta_Acida.cpp" />
+		<Unit filename="src/Plataforma.cpp" />
+		<Unit filename="src/Projetil_Acido.cpp" />
+		<Unit filename="src/main.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

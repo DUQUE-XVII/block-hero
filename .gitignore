@@ -1,1 +1,14 @@
+
+# Arquivos temporários de compilação
 obj/
+
+# Executáveis
+*.exe
+
+# Arquivos de depuração
+*.o
+*.a
+*.dll.a
+
+# Configurações pessoais do Code::Blocks
+*.layout
