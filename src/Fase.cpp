@@ -57,6 +57,9 @@ void Fase::desenhar() {
 }
 
 Jogador* Fase::getJogador() const { return pJogador; }
+
 int Fase::getNumeroFase() const { return numeroFase; }
+
 bool Fase::estaConcluida() const { return concluida; }
-std::vector<CriaturaHostil*> Fase::getInimigos() const { return listaInimigos; }
+
+vector<CriaturaHostil*> Fase::getInimigos() const { return listaInimigos; }

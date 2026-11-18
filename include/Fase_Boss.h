@@ -9,10 +9,10 @@ private:
     const int maxObstaculos;
 
 public:
-    Fase_Boss();
+    Fase_Boss(Jogador* jogador);
     ~Fase_Boss();
 
-    void iniciarFase() override; // Instancia o Herói e o Boitatá
+    void iniciarFase() override;
     void executar() override;
 
     void salvar() override;

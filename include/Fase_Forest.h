@@ -1,7 +1,7 @@
 #ifndef FASE_FOREST_H
 #define FASE_FOREST_H
 
-#include "Fase.h"
+#include    "Fase.h"
 
 class Fase_Forest : public Fase {
 private:
@@ -9,10 +9,10 @@ private:
     const int maxObstaculos;
 
 public:
-    Fase_Forest();
+    Fase_Forest(Jogador* jogador);
     ~Fase_Forest();
 
-    void iniciarFase() override; // Instancia o Herói, Cogumelos e Plantas
+    void iniciarFase() override;
     void executar() override;
 
     void salvar() override;

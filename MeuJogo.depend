@@ -679,7 +679,7 @@
 	"CriaturaHostil.h"
 	"Gerenciador_CL.h"
 
-1794693091 source:c:\users\joaol\desktop\meujogo\src\boitata.cpp
+1794963448 source:c:\users\joaol\desktop\meujogo\src\boitata.cpp
 	"Boitata.h"
 	"Projetil_Acido.h"
 	"Jogador.h"
@@ -687,12 +687,12 @@
 1794693091 c:\users\joaol\desktop\meujogo\include\boitata.h
 	"CriaturaHostil.h"
 
-1794667131 c:\users\joaol\desktop\meujogo\include\criaturahostil.h
+1794954425 c:\users\joaol\desktop\meujogo\include\criaturahostil.h
 	"Jogador.h"
 	"stdafx.h"
 	"Personagem.h"
 
-1794691843 c:\users\joaol\desktop\meujogo\include\jogador.h
+1794963604 c:\users\joaol\desktop\meujogo\include\jogador.h
 	"Personagem.h"
 	"stdafx.h"
 
@@ -735,7 +735,7 @@
 	"stdafx.h"
 	"Jogador.h"
 
-1794667131 source:c:\users\joaol\desktop\meujogo\src\criaturahostil.cpp
+1794954424 source:c:\users\joaol\desktop\meujogo\src\criaturahostil.cpp
 	"CriaturaHostil.h"
 
 1794172810 source:c:\users\joaol\desktop\meujogo\src\ente.cpp
@@ -744,16 +744,17 @@
 1794170272 source:c:\users\joaol\desktop\meujogo\src\entidade.cpp
 	"Entidade.h"
 
-1794946254 source:c:\users\joaol\desktop\meujogo\src\fase.cpp
+1794962675 source:c:\users\joaol\desktop\meujogo\src\fase.cpp
 	"Fase.h"
-	<iostream>
 
-1794946181 c:\users\joaol\desktop\meujogo\include\fase.h
+1794962675 c:\users\joaol\desktop\meujogo\include\fase.h
 	"stdafx.h"
-	"Personagem.h"
+	"Ente.h"
 	"Jogador.h"
 	"CriaturaHostil.h"
+	"Plataforma.h"
 	"Gerenciador_CL.h"
+	"ListaEntidade.h"
 
 1794691843 c:\users\joaol\desktop\meujogo\include\gerenciador_cl.h
 	"Jogador.h"
@@ -1303,4 +1304,80 @@
 	<SFML/System/Export.hpp>
 	<string_view>
 	<cstdint>
+
+1794691843 source:c:\users\joaol\desktop\meujogo\src\gerenciador_cl.cpp
+	"Gerenciador_CL.h"
+	"Projetil_Acido.h"
+
+1794616398 source:c:\users\joaol\desktop\meujogo\src\gerenciadorgrafico.cpp
+	"GerenciadorGrafico.h"
+	"Ente.h"
+
+1794617229 c:\users\joaol\desktop\meujogo\include\plataforma.h
+	"Obstaculo.h"
+	"Gerenciador_CL.h"
+
+1794873238 c:\users\joaol\desktop\meujogo\include\listaentidade.h
+	"Lista.h"
+	"Entidade.h"
+
+1794873238 c:\users\joaol\desktop\meujogo\include\lista.h
+
+1794962675 source:c:\users\joaol\desktop\meujogo\src\fase_boss.cpp
+	"Fase_Boss.h"
+	"Boitata.h"
+	"Projetil_Acido.h"
+
+1794962675 c:\users\joaol\desktop\meujogo\include\fase_boss.h
+	"Fase.h"
+
+1794963034 source:c:\users\joaol\desktop\meujogo\src\fase_forest.cpp
+	"Fase_Forest.h"
+	"Capanga_Cogumelo.h"
+	"Planta_Acida.h"
+	"Projetil_Acido.h"
+	<iostream>
+
+1794962675 c:\users\joaol\desktop\meujogo\include\fase_forest.h
+	"Fase.h"
+
+1794691843 c:\users\joaol\desktop\meujogo\include\planta_acida.h
+	"CriaturaHostil.h"
+
+1794963715 source:c:\users\joaol\desktop\meujogo\src\jogador.cpp
+	"Jogador.h"
+	"Plataforma.h"
+
+1794962675 source:c:\users\joaol\desktop\meujogo\src\jogo.cpp
+	"Jogo.h"
+
+1794962675 c:\users\joaol\desktop\meujogo\include\jogo.h
+	"stdafx.h"
+	"GerenciadorGrafico.h"
+	"Jogador.h"
+	"Ente.h"
+	"Fase.h"
+	"Fase_Forest.h"
+	"Fase_Boss.h"
+
+1793752468 source:c:\users\joaol\desktop\meujogo\src\main.cpp
+	"Jogo.h"
+
+1794175272 source:c:\users\joaol\desktop\meujogo\src\obstaculo.cpp
+	"Obstaculo.h"
+
+1794667131 source:c:\users\joaol\desktop\meujogo\src\personagem.cpp
+	"Personagem.h"
+
+1794691843 source:c:\users\joaol\desktop\meujogo\src\planta_acida.cpp
+	"Planta_Acida.h"
+	"Projetil_Acido.h"
+	"Jogador.h"
+
+1794618090 source:c:\users\joaol\desktop\meujogo\src\plataforma.cpp
+	"Plataforma.h"
+	"Jogador.h"
+
+1794701176 source:c:\users\joaol\desktop\meujogo\src\projetil_acido.cpp
+	"Projetil_Acido.h"
 

@@ -1,36 +1,69 @@
 #include "Fase_Boss.h"
 #include "Boitata.h"
-#include <iostream>
+#include "Projetil_Acido.h"
 
-Fase_Boss::Fase_Boss() : Fase(2), maxChefes(1), maxObstaculos(3) {}
+
+Fase_Boss::Fase_Boss(Jogador* jogador)
+    : Fase(2, jogador), maxChefes(1), maxObstaculos(3) {}
 
 Fase_Boss::~Fase_Boss() {}
 
 void Fase_Boss::iniciarFase() {
-    cout << "[FASE 2] Iniciando a Caverna do Boitata...\n";
+    std::cout << "[FASE 2] Iniciando a Caverna do Boitata...\n";
 
-    // 1. Cria o Herói (mantém a vida da fase anterior, em teoria)
-    pJogador = new Jogador();
-    pJogador->setPosicao(100.0f, 500.0f);
+    // 1. Reposiciona o Jogador mantendo a vida atual
+    if (pJogador != nullptr) {
+        pJogador->setX(100.0f);
+        pJogador->setY(500.0f);
+        pFisica->getJogador(pJogador);
+        listaEntidades.incluir(pJogador);
+    }
 
-    // 2. Instancia o Chefão
+    // 2. Cria arena e plataforma elevada para desviar do fogo
+    criarLimitesArena();
+
+    Plataforma* platCentral = new Plataforma(280, 420, 240, 20);
+    listaPlataformas.push_back(platCentral);
+    pFisica->incluirObstaculo(platCentral);
+    listaEntidades.incluir(platCentral);
+
+    // 3. Instancia o Chefão
     Boitata* boss = new Boitata();
-    boss-> // Voa mais alto
-    boss->definirAlvo(pJogador); // Passa o alvo para o Boitatá perseguir
+    boss->setPosicao(600.0f, 200.0f);
+    boss->definirAlvo(pJogador);
 
     listaInimigos.push_back(boss);
+    pFisica->incluirInimigos(boss);
+    pFisica->incluirProjetil(boss->getProjetil());
+    listaEntidades.incluir(boss);
 }
 
 void Fase_Boss::executar() {
-    if (pJogador->getVida() <= 0) return;
+    if (pJogador == nullptr || !pJogador->estaVivo()) return;
 
-    pJogador->atualizar();
+    pJogador->executar();
 
+    bool bossDerrotado = true;
     for (CriaturaHostil* inimigo : listaInimigos) {
-        inimigo->executar();
+        if (inimigo != nullptr && inimigo->estaVivo()) {
+            inimigo->executar();
+            bossDerrotado = false;
+        }
     }
 
-    pFisica->verificarDano(pJogador, listaInimigos);
+    pFisica->executar();
+
+    desenhar();
+    for (CriaturaHostil* inimigo : listaInimigos) {
+        Boitata* boss = dynamic_cast<Boitata*>(inimigo);
+        if (boss != nullptr && boss->getProjetil()->estaAtivo()) {
+            boss->getProjetil()->desenhar();
+        }
+    }
+
+    if (bossDerrotado) {
+        concluida = true;
+    }
 }
 
 void Fase_Boss::salvar() { std::cout << "[SALVAR] Fase 2 salva.\n"; }

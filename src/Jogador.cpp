@@ -3,8 +3,9 @@
 
 
 Jogador::Jogador()
-    :   vidas(10),
+    :   vidas(20),
         pontos(0),
+        velocidadeX(0.f),
         velocidadeY(0),
         yAnterior(0),
         noChao(true),
@@ -29,21 +30,24 @@ void Jogador::executar()
 
 void Jogador::mover()
 {
-
     xAnterior = x;
     yAnterior = y;
 
-    // Movimento horizontal
+    // Movimento horizontal pelo teclado
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
         x += velocidade;
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
         x -= velocidade;
 
-    // Verifica se a tecla de pulo foi pressionada
-    bool cima = sf::Keyboard::isKeyPressed(
-        sf::Keyboard::Key::Up
-    );
+
+    x += velocidadeX;
+    velocidadeX *= 0.85f;
+    if (std::abs(velocidadeX) < 0.2f)
+        velocidadeX = 0.f;
+
+
+    bool cima = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up);
 
     if (cima && !teclaCimaAnterior && noChao)
     {
@@ -52,18 +56,14 @@ void Jogador::mover()
 
     teclaCimaAnterior = cima;
 
-    // Guarda a posição vertical anterior
-    yAnterior = y;
 
-    // A gravidade atua continuamente
     noChao = false;
     velocidadeY += gravidade;
     y += velocidadeY;
 
-    // Atualiza a posição do retângulo
-    retangulo->setPosition({(float)x, y});
-}
 
+    retangulo->setPosition({x, y});
+}
 float Jogador::getX() const
 {
     return x;
@@ -123,4 +123,11 @@ bool Jogador::estaVivo(){
     if(vidas<=0)
         return false;
     return true;
+}
+
+void Jogador::arremessar(float direcaoX)
+{
+    velocidadeX = direcaoX * 14.f; // Empurra forte para o lado
+    velocidadeY = -10.f;           // Joga para cima
+    noChao = false;
 }

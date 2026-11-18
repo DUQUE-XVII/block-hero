@@ -1,13 +1,13 @@
 #ifndef FASE_H
 #define FASE_H
 
-#include "stdafx.h"
-#include "Ente.h"
-#include "Jogador.h"
-#include "CriaturaHostil.h"
-#include "Plataforma.h"
-#include "Gerenciador_CL.h"
-#include "ListaEntidade.h"
+#include    "stdafx.h"
+#include    "Ente.h"
+#include    "Jogador.h"
+#include    "CriaturaHostil.h"
+#include    "Plataforma.h"
+#include    "Gerenciador_CL.h"
+#include    "ListaEntidade.h"
 
 class Fase : public Ente {
 protected:

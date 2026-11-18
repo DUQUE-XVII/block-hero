@@ -3,9 +3,6 @@
 #include    "Personagem.h"
 #include    "stdafx.h"
 
-
-
-
 class Jogador : public Personagem {
     private:
         int pontos;
@@ -20,15 +17,15 @@ class Jogador : public Personagem {
         bool noChao;
         float xAnterior;
         float yAnterior;
+        float velocidadeX;
         float velocidadeY;
-
 
         Jogador();
         virtual ~Jogador();
 
-        void executar() override;
-        void mover() override;
-        void salvar() override;
+        void executar();
+        void mover();
+        void salvar();
 
         float getX() const;
         float getY() const;
@@ -41,6 +38,7 @@ class Jogador : public Personagem {
 
         void receberDano(int dano);
         void quicar();
+        void arremessar(float direcaoX);
         bool estaVivo();
-
 };
+

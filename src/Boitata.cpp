@@ -71,19 +71,36 @@ void Boitata::mover()
 
     const sf::Vector2f posAlvo = alvo->getForma()->getPosition();
     const sf::Vector2f tamanhoAlvo = alvo->getForma()->getSize();
-    const float centroAlvo = posAlvo.x + tamanhoAlvo.x / 2.f;
-    const float centroBoitata = posX + retangulo->getSize().x / 2.f;
+    const float centroAlvoX = posAlvo.x + tamanhoAlvo.x / 2.f;
+    const float centroAlvoY = posAlvo.y + tamanhoAlvo.y / 2.f;
 
-    if (centroAlvo > centroBoitata)
+    const float centroBoitataX = posX + retangulo->getSize().x / 2.f;
+    const float centroBoitataY = posY + retangulo->getSize().y / 2.f;
+
+    // Movimento horizontal (eixo X)
+    if (centroAlvoX > centroBoitataX)
         posX += velocidadePerseguicao;
-    else if (centroAlvo < centroBoitata)
+    else if (centroAlvoX < centroBoitataX)
         posX -= velocidadePerseguicao;
 
-    // Mantém o inimigo dentro da área jogável (paredes em x=20 e x=780).
+    // Movimento vertical (eixo Y)
+    const float velocidadeVertical = velocidadePerseguicao * 0.8f;
+    if (centroAlvoY > centroBoitataY)
+        posY += velocidadeVertical;
+    else if (centroAlvoY < centroBoitataY)
+        posY -= velocidadeVertical;
+
+    // Limites horizontais da arena (paredes em x=20 e x=780)
     if (posX < 20.f)
         posX = 20.f;
     if (posX + retangulo->getSize().x > 780.f)
         posX = 780.f - retangulo->getSize().x;
+
+    // Limites verticais da arena (teto em y=20 e chão em y=560)
+    if (posY < 20.f)
+        posY = 20.f;
+    if (posY + retangulo->getSize().y > 560.f)
+        posY = 560.f - retangulo->getSize().y;
 
     x = posX;
     y = posY;
@@ -100,7 +117,15 @@ void Boitata::salvar()
 void Boitata::danificar(Jogador* pJogador)
 {
     if (pJogador != nullptr)
+    {
         pJogador->receberDano(danoContato);
+
+        const float centroBoitata = posX + retangulo->getSize().x / 2.f;
+        const float centroJogador = pJogador->getX() + pJogador->getForma()->getSize().x / 2.f;
+        const float direcao = (centroJogador >= centroBoitata) ? 1.f : -1.f;
+
+        pJogador->arremessar(direcao);
+    }
 }
 
 Projetil_Acido* Boitata::getProjetil() const
