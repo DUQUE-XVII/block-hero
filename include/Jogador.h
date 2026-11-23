@@ -43,5 +43,8 @@ class Jogador : public Personagem {
 
         void reduzirVelocidade();
         void restaurarVelocidade();
+
+        int  getPontos() const;
+        void adicionarPontos(int p);
 };
 

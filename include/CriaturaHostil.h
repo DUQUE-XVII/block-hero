@@ -12,6 +12,7 @@ protected:
     int danoContato;
 
     Jogador* alvo; // O Enemy(Easy) vai ignorar isso, mas os outros usam.
+    int pontosAoMorrer;
 
 public:
     CriaturaHostil();
@@ -30,6 +31,7 @@ public:
     float getX() const;
     float getY() const;
     int getVida() const;
+    int getPontos() const;
 };
 
 #endif

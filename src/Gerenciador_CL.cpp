@@ -93,6 +93,9 @@ void Gerenciador_CL::colisaoinimigo()
             pJog1->setY(inimigo.position.y - jogador.size.y);
             pInimigo->receberDano(2);
             pJog1->quicar();
+
+            if (!pInimigo->estaVivo())
+                pJog1->adicionarPontos(pInimigo->getPontos());
         }
         else
         {

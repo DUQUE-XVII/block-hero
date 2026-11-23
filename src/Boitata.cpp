@@ -6,7 +6,8 @@ Boitata::Boitata()
     : velocidadePerseguicao(1.5f),
       tempoRecargaFogo(120), // 120 quadros: aproximadamente 2 segundos a 60 FPS
       contadorTempoFogo(0),
-      pFogo(new Projetil_Acido())
+      pFogo(new Projetil_Acido()),
+      pontosAoMorrer(1000)
 {
     posX = 600.f;
     posY = 200.f;

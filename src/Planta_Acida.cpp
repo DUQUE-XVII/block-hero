@@ -3,7 +3,8 @@
 #include "Jogador.h"
 
 Planta_Acida::Planta_Acida()
-    : tempoRecarga(90), contadorTempo(0), pAcido(new Projetil_Acido())
+    : tempoRecarga(90), contadorTempo(0), pAcido(new Projetil_Acido()),
+    pontosAoMorrer(150)
 {
     // A planta fica apoiada no chão (que começa em y = 560).
     x = 680.f;

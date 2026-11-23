@@ -12,6 +12,7 @@ private:
     int tempoRecargaFogo;
     int contadorTempoFogo;
     Projetil_Acido* pFogo;
+    int pontosAoMorrer;
 
 public:
     Boitata();

@@ -20,6 +20,7 @@ void Lama::executar(){
 }
 
 void Lama::salvar(){
+    salvarDataBuffer();
 }
 
 bool Lama::reduzVelocidade(){

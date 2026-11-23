@@ -10,6 +10,7 @@ private:
     int tempoRecarga;
     int contadorTempo;
     Projetil_Acido* pAcido;
+    int pontosAoMorrer;
 
 public:
     Planta_Acida();

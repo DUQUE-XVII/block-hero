@@ -142,3 +142,13 @@ void Jogador::restaurarVelocidade()
 {
     velocidade = 4.f;
 }
+
+int Jogador::getPontos() const
+{
+    return pontos;
+}
+
+void Jogador::adicionarPontos(int p)
+{
+    pontos += p;
+}

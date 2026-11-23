@@ -69,6 +69,11 @@ void Fase::desenhar() {
             plat->desenhar();
         }
     }
+
+    if (pGG != nullptr && pJogador != nullptr) {
+        pGG->desenharTexto("Pontos: " + std::to_string(pJogador->getPontos()),
+                           30.f, 28.f);
+    }
 }
 void Fase::criarCapanga(float x, float y)
 {

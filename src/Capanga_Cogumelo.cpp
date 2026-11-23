@@ -28,6 +28,12 @@ void Capanga_Cogumelo::inverterDirecao() {
 
 void Capanga_Cogumelo::danificar(Jogador* pJogador) {
     pJogador->receberDano(danoContato);
+
+        const float centroCogumelo = posX + retangulo->getSize().x / 2.f;
+        const float centroJogador = pJogador->getX() + pJogador->getForma()->getSize().x / 2.f;
+        const float direcao = (centroJogador >= centroCogumelo) ? 1.f : -1.f;
+    pJogador->arremessar(direcao);
+
     inverterDirecao();
 }
 

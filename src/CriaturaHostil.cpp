@@ -1,12 +1,13 @@
 
 #include "CriaturaHostil.h"
 
-CriaturaHostil::CriaturaHostil() : id(0), vidas(10), posX(0), posY(0), danoContato(1), alvo(nullptr)
+CriaturaHostil::CriaturaHostil() : id(0), vidas(10), posX(0), posY(0),
+    danoContato(1), pontosAoMorrer(100), alvo(nullptr)
 {
-
 }
 CriaturaHostil::~CriaturaHostil() {}
 
+int CriaturaHostil::getPontos() const { return pontosAoMorrer; }
 
 void CriaturaHostil::definirAlvo(Jogador* pJogador) {
     alvo = pJogador;
