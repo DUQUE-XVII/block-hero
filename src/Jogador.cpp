@@ -5,7 +5,7 @@
 Jogador::Jogador()
     :   vidas(20),
         pontos(0),
-        velocidadeX(0.f),
+        velocidadeX(0),
         velocidadeY(0),
         yAnterior(0),
         noChao(true),
@@ -16,8 +16,9 @@ Jogador::Jogador()
     xAnterior = x;
     yAnterior = y;
 
-    retangulo->setSize({40.f, 60.f});
+    retangulo->setSize({60.f, 40.f});
     retangulo->setFillColor(sf::Color::White);
+    carregarTextura("assets/Jogador/Heroi.png");
     retangulo->setPosition({x, y});
 }
 
@@ -130,4 +131,14 @@ void Jogador::arremessar(float direcaoX)
     velocidadeX = direcaoX * 14.f; // Empurra forte para o lado
     velocidadeY = -10.f;           // Joga para cima
     noChao = false;
+}
+
+void Jogador::reduzirVelocidade()
+{
+    velocidade = 2.f;
+}
+
+void Jogador::restaurarVelocidade()
+{
+    velocidade = 4.f;
 }

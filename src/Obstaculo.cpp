@@ -15,3 +15,7 @@ void Obstaculo::salvarDataBuffer()
 
     Salvamento << " " << dano;
 }
+
+bool Obstaculo::reduzVelocidade(){
+    return false;
+}

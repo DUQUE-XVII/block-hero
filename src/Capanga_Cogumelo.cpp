@@ -9,8 +9,9 @@ Capanga_Cogumelo::Capanga_Cogumelo() {
     danoContato = 1;
     sf::Color marrom(139, 69, 19);
 
-    retangulo->setSize({40.f, 50.f});
+    retangulo->setSize({44.f, 50.f});
     retangulo->setFillColor(marrom);
+    carregarTextura("assets/Inimigos/Cogumelo.png");
     retangulo->setPosition({posX, posY});
 }
 Capanga_Cogumelo::~Capanga_Cogumelo() {}

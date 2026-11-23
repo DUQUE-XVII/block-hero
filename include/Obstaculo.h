@@ -19,4 +19,5 @@ class Obstaculo : public Entidade
         virtual void executar() = 0;
         virtual void salvar() = 0;
         virtual void obstaculizar(Jogador* pJogador) = 0;
+        virtual bool reduzVelocidade();
 };

@@ -9,6 +9,9 @@ class Ente{
         int id;
         static GerenciadorGrafico* pGG ;
         sf::RectangleShape* retangulo;
+        sf::Texture textura;
+        bool carregarTextura(const std::string& caminho,
+                             const sf::IntRect& area = sf::IntRect());
 
     public:
         Ente();

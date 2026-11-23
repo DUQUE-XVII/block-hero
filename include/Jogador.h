@@ -8,7 +8,7 @@ class Jogador : public Personagem {
         int pontos;
 
         bool teclaCimaAnterior;
-        const float velocidade = 4.f;
+        float velocidade = 4.f;
         const float gravidade = 0.6f;
         const float forcaPulo = -14.f;
 
@@ -40,5 +40,8 @@ class Jogador : public Personagem {
         void quicar();
         void arremessar(float direcaoX);
         bool estaVivo();
+
+        void reduzirVelocidade();
+        void restaurarVelocidade();
 };
 

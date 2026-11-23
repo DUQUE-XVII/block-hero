@@ -4,9 +4,7 @@
 #include "Fase.h"
 
 class Fase_Boss : public Fase {
-private:
-    const int maxChefes;
-    const int maxObstaculos;
+
 
 public:
     Fase_Boss(Jogador* jogador);

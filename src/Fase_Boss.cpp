@@ -4,14 +4,13 @@
 
 
 Fase_Boss::Fase_Boss(Jogador* jogador)
-    : Fase(2, jogador), maxChefes(1), maxObstaculos(3) {}
+    : Fase(2, jogador, 3, 4) {}
 
 Fase_Boss::~Fase_Boss() {}
 
 void Fase_Boss::iniciarFase() {
     std::cout << "[FASE 2] Iniciando a Caverna do Boitata...\n";
 
-    // 1. Reposiciona o Jogador mantendo a vida atual
     if (pJogador != nullptr) {
         pJogador->setX(100.0f);
         pJogador->setY(500.0f);
@@ -19,23 +18,23 @@ void Fase_Boss::iniciarFase() {
         listaEntidades.incluir(pJogador);
     }
 
-    // 2. Cria arena e plataforma elevada para desviar do fogo
     criarLimitesArena();
+    gerarPlataformasAleatorias(3);   // plataformas aleatórias para desviar do fogo
 
-    Plataforma* platCentral = new Plataforma(280, 420, 240, 20);
-    listaPlataformas.push_back(platCentral);
-    pFisica->incluirObstaculo(platCentral);
-    listaEntidades.incluir(platCentral);
+    // Capangas patrulhando o chão
+    criarCapanga(250.0f, 510.0f);
+    criarCapanga(550.0f, 510.0f);
 
-    // 3. Instancia o Chefão
+    // Chefão
     Boitata* boss = new Boitata();
     boss->setPosicao(600.0f, 200.0f);
     boss->definirAlvo(pJogador);
 
-    listaInimigos.push_back(boss);
-    pFisica->incluirInimigos(boss);
+    if (!registrarInimigo(boss)) {
+        delete boss;
+        return;
+    }
     pFisica->incluirProjetil(boss->getProjetil());
-    listaEntidades.incluir(boss);
 }
 
 void Fase_Boss::executar() {

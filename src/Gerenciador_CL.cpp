@@ -30,43 +30,12 @@ void Gerenciador_CL::colisaoObstaculo()
     {
         if (pObstaculo == nullptr || !verificaColi(pJog1, pObstaculo))
             continue;
+        if(pObstaculo->reduzVelocidade())
+            pJog1->reduzirVelocidade();
+        else
+            pJog1->restaurarVelocidade();
+        pObstaculo->obstaculizar(pJog1);
 
-        sf::FloatRect jogador = pJog1->getForma()->getGlobalBounds();
-        sf::FloatRect plataforma = pObstaculo->getForma()->getGlobalBounds();
-
-        // Pouso: o jogador estava acima e está descendo.
-        if (pJog1->getVelocidadeY() > 0.f &&
-            pJog1->getYAnterior() + jogador.size.y <= plataforma.position.y &&
-            jogador.position.y + jogador.size.y >= plataforma.position.y)
-        {
-            pJog1->setY(plataforma.position.y - jogador.size.y);
-            pJog1->pararQueda();
-            jogador = pJog1->getForma()->getGlobalBounds();
-        }
-
-        const float esquerdaJ = jogador.position.x;
-        const float direitaJ = jogador.position.x + jogador.size.x;
-        const float topoJ = jogador.position.y;
-        const float baixoJ = jogador.position.y + jogador.size.y;
-        const float esquerdaO = plataforma.position.x;
-        const float direitaO = plataforma.position.x + plataforma.size.x;
-        const float topoO = plataforma.position.y;
-        const float baixoO = plataforma.position.y + plataforma.size.y;
-
-        const bool sobrepoeY = baixoJ > topoO && topoJ < baixoO;
-
-        if (sobrepoeY &&
-            pJog1->xAnterior + jogador.size.x <= esquerdaO &&
-            direitaJ >= esquerdaO)
-        {
-            pJog1->setX(esquerdaO - jogador.size.x);
-        }
-        else if (sobrepoeY &&
-                 pJog1->xAnterior >= direitaO &&
-                 esquerdaJ <= direitaO)
-        {
-            pJog1->setX(direitaO);
-        }
     }
 }
 

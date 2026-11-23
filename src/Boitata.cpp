@@ -15,8 +15,9 @@ Boitata::Boitata()
     vidas = 100;
     danoContato = 5;
 
-    retangulo->setSize({55.f, 45.f});
+    retangulo->setSize({97.f, 60.f});
     retangulo->setFillColor(sf::Color(190, 45, 35));
+    carregarTextura("assets/Inimigos/Boitata.png");
     retangulo->setPosition({posX, posY});
 
     // Reutiliza a entidade de projétil do projeto, mas dá a ela aparência de fogo.

@@ -4,9 +4,6 @@
 #include    "Fase.h"
 
 class Fase_Forest : public Fase {
-private:
-    const int maxInimigos;
-    const int maxObstaculos;
 
 public:
     Fase_Forest(Jogador* jogador);
@@ -15,6 +12,7 @@ public:
     void iniciarFase() override;
     void executar() override;
 
+    void criarLama(int x, int y);
     void salvar() override;
     void carregar() override;
 };

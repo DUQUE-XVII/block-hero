@@ -11,8 +11,9 @@ Planta_Acida::Planta_Acida()
     vidas = 2;
     danoContato = 1;
 
-    retangulo->setSize({45.f, 50.f});
+    retangulo->setSize({47.f, 50.f});
     retangulo->setFillColor(sf::Color(30, 150, 45));
+    carregarTextura("assets/Inimigos/Planta.png");
     retangulo->setPosition({x, y});
 }
 
