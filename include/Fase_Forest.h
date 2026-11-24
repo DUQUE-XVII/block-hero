@@ -13,7 +13,7 @@ public:
     void executar() override;
 
     void criarLama(int x, int y);
-    void salvar() override;
+
     void carregar() override;
 };
 

@@ -61,6 +61,12 @@ void Planta_Acida::mover()
 void Planta_Acida::salvar()
 {
     salvarDataBuffer();
+
+    Salvamento << " " << vidas
+               << " " << contadorTempo;
+
+    pAcido->salvar();
+    Salvamento << " " << pAcido->getDadosSalvos();
 }
 
 void Planta_Acida::danificar(Jogador* pJogador)

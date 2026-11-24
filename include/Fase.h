@@ -42,7 +42,7 @@ class Fase : public Ente {
         virtual void executar() = 0;
         virtual void desenhar();
 
-        virtual void salvar() = 0;
+        virtual void salvar(std::ostream& arquivo);
         virtual void carregar() = 0;
 
         Jogador* getJogador() const;

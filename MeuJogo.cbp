@@ -53,6 +53,7 @@
 		<Unit filename="include/Jogador.h" />
 		<Unit filename="include/Jogo.h" />
 		<Unit filename="include/Lama.h" />
+		<Unit filename="include/Lava.h" />
 		<Unit filename="include/Lista.h" />
 		<Unit filename="include/ListaEntidade.h" />
 		<Unit filename="include/Obstaculo.h" />
@@ -74,6 +75,7 @@
 		<Unit filename="src/Jogador.cpp" />
 		<Unit filename="src/Jogo.cpp" />
 		<Unit filename="src/Lama.cpp" />
+		<Unit filename="src/Lava.cpp" />
 		<Unit filename="src/Obstaculo.cpp" />
 		<Unit filename="src/Personagem.cpp" />
 		<Unit filename="src/Planta_Acida.cpp" />

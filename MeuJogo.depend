@@ -706,7 +706,7 @@
 	"stdafx.h"
 	"GerenciadorGrafico.h"
 
-1795399790 c:\users\joaol\desktop\meujogo\include\stdafx.h
+1795484709 c:\users\joaol\desktop\meujogo\include\stdafx.h
 	<stdio.h>
 	<string.h>
 	<iostream>
@@ -721,6 +721,7 @@
 	<cmath>
 	<random>
 	<algorithm>
+	<ostream>
 
 1795468851 c:\users\joaol\desktop\meujogo\include\gerenciadorgrafico.h
 	"stdafx.h"
@@ -728,7 +729,7 @@
 1794701176 c:\users\joaol\desktop\meujogo\include\projetil_acido.h
 	"Entidade.h"
 
-1795470173 source:c:\users\joaol\desktop\meujogo\src\capanga_cogumelo.cpp
+1795481045 source:c:\users\joaol\desktop\meujogo\src\capanga_cogumelo.cpp
 	"Capanga_Cogumelo.h"
 	"Jogador.h"
 
@@ -749,7 +750,7 @@
 1795468851 source:c:\users\joaol\desktop\meujogo\src\fase.cpp
 	"Fase.h"
 
-1795400626 c:\users\joaol\desktop\meujogo\include\fase.h
+1795484709 c:\users\joaol\desktop\meujogo\include\fase.h
 	"stdafx.h"
 	"Ente.h"
 	"Jogador.h"
@@ -1331,7 +1332,7 @@
 	"Boitata.h"
 	"Projetil_Acido.h"
 
-1795466049 c:\users\joaol\desktop\meujogo\include\fase_boss.h
+1795484709 c:\users\joaol\desktop\meujogo\include\fase_boss.h
 	"Fase.h"
 	"Lava.h"
 
@@ -1343,7 +1344,7 @@
 	<iostream>
 	"Lama.h"
 
-1795388823 c:\users\joaol\desktop\meujogo\include\fase_forest.h
+1795484709 c:\users\joaol\desktop\meujogo\include\fase_forest.h
 	"Fase.h"
 
 1795468917 c:\users\joaol\desktop\meujogo\include\planta_acida.h
@@ -1383,7 +1384,7 @@
 	"Plataforma.h"
 	"Jogador.h"
 
-1794701176 source:c:\users\joaol\desktop\meujogo\src\projetil_acido.cpp
+1795481045 source:c:\users\joaol\desktop\meujogo\src\projetil_acido.cpp
 	"Projetil_Acido.h"
 
 1795465424 source:c:\users\joaol\desktop\meujogo\src\lama.cpp

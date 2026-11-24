@@ -80,5 +80,5 @@ void Fase_Boss::executar() {
     }
 }
 
-void Fase_Boss::salvar() { std::cout << "[SALVAR] Fase 2 salva.\n"; }
+
 void Fase_Boss::carregar() { std::cout << "[CARREGAR] Fase 2 carregada.\n"; }

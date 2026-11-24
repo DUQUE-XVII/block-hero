@@ -23,6 +23,8 @@
 #include    <random>
 #include    <algorithm>
 
+#include    <ostream>
+
 using namespace std;
 using std::cout;
 using std::endl;

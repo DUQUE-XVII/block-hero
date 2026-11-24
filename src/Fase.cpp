@@ -1,4 +1,8 @@
-#include "Fase.h"
+#include    "Fase.h"
+#include    "Boitata.h"
+#include    "Planta_Acida.h"
+#include    "Lama.h"
+#include    "Lava.h"
 
 Fase::Fase(int num, Jogador* jogador,int limiteInimigos, int limiteObstaculos)
     : numeroFase(num),
@@ -172,5 +176,57 @@ Jogador* Fase::getJogador() const { return pJogador; }
 int Fase::getNumeroFase() const { return numeroFase; }
 
 bool Fase::estaConcluida() const { return concluida; }
+void Fase::salvar(std::ostream& arquivo)
+{
+    arquivo << "FASE " << numeroFase << "\n";
+    arquivo << "CONCLUIDA " << concluida << "\n";
+
+    // Salvar jogador
+    if (pJogador != nullptr)
+    {
+        pJogador->salvar();
+        arquivo << "JOGADOR " << pJogador->getDadosSalvos() << "\n";
+    }
+
+    // Quantidade de obstáculos
+    arquivo << "OBSTACULOS " << listaPlataformas.size() << "\n";
+
+    for (Obstaculo* obstaculo : listaPlataformas)
+    {
+        if (obstaculo == nullptr)
+            continue;
+
+        obstaculo->salvar();
+
+        if (dynamic_cast<Lava*>(obstaculo))
+            arquivo << "LAVA ";
+        else if (dynamic_cast<Lama*>(obstaculo))
+            arquivo << "LAMA ";
+        else if (dynamic_cast<Plataforma*>(obstaculo))
+            arquivo << "PLATAFORMA ";
+
+        arquivo << obstaculo->getDadosSalvos() << "\n";
+    }
+
+    // Quantidade de inimigos
+    arquivo << "INIMIGOS " << listaInimigos.size() << "\n";
+
+    for (CriaturaHostil* inimigo : listaInimigos)
+    {
+        if (inimigo == nullptr)
+            continue;
+
+        inimigo->salvar();
+
+        if (dynamic_cast<Capanga_Cogumelo*>(inimigo))
+            arquivo << "CAPANGA ";
+        else if (dynamic_cast<Boitata*>(inimigo))
+            arquivo << "BOITATA ";
+        else if (dynamic_cast<Planta_Acida*>(inimigo))
+            arquivo << "PLANTA ";
+
+        arquivo << inimigo->getDadosSalvos() << "\n";
+    }
+}
 
 vector<CriaturaHostil*> Fase::getInimigos() const { return listaInimigos; }

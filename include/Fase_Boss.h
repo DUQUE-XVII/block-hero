@@ -15,7 +15,7 @@ class Fase_Boss : public Fase {
         void iniciarFase() override;
         void executar() override;
 
-        void salvar() override;
+
         void carregar() override;
 };
 

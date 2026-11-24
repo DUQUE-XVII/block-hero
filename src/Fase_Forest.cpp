@@ -110,5 +110,5 @@ void Fase_Forest::executar() {
 }
 
 
-void Fase_Forest::salvar() { std::cout << "[SALVAR] Fase 1 salva.\n"; }
+
 void Fase_Forest::carregar() { std::cout << "[CARREGAR] Fase 1 carregada.\n"; }

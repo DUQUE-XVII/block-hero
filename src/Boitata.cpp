@@ -118,6 +118,9 @@ void Boitata::salvar()
 
     Salvamento << " " << vidas
                << " " << contadorTempoFogo;
+
+    pFogo->salvar();
+    Salvamento << " " << pFogo->getDadosSalvos();
 }
 
 void Boitata::danificar(Jogador* pJogador)
