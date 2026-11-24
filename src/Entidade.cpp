@@ -9,6 +9,11 @@ Entidade::~Entidade()
 {
 }
 
+string Entidade::getDadosSalvos() const
+{
+    return Salvamento.str();
+}
+
 void Entidade::salvarDataBuffer()
 {
     Salvamento.str("");

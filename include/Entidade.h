@@ -18,4 +18,6 @@ class Entidade : public Ente {
 
         virtual void executar() = 0;
         virtual void salvar() = 0;
+        string getDadosSalvos() const;
+
 };

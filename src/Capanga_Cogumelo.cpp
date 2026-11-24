@@ -46,7 +46,13 @@ void Capanga_Cogumelo::mover(){
 
 void Capanga_Cogumelo::salvar()
 {
+    x = posX;
+    y = posY;
+
     salvarDataBuffer();
+
+    Salvamento << " " << vidas
+               << " " << direcao;
 }
 
 bool Capanga_Cogumelo::estaVivo(){

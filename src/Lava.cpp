@@ -15,6 +15,8 @@ void Lava::executar(){
 }
 
 void Lava::salvar(){
+    salvarDataBuffer();
+    Salvamento << " " << Dano;
 }
 
 void Lava::obstaculizar(Jogador* pJogador){

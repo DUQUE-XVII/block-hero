@@ -53,4 +53,8 @@ int Projetil_Acido::getDano() const
 void Projetil_Acido::salvar()
 {
     salvarDataBuffer();
+
+    Salvamento << " " << velX
+               << " " << dano
+               << " " << ativo;
 }

@@ -692,14 +692,14 @@
 	"stdafx.h"
 	"Personagem.h"
 
-1795468851 c:\users\joaol\desktop\meujogo\include\jogador.h
+1795471282 c:\users\joaol\desktop\meujogo\include\jogador.h
 	"Personagem.h"
 	"stdafx.h"
 
 1794667131 c:\users\joaol\desktop\meujogo\include\personagem.h
 	"Entidade.h"
 
-1794618655 c:\users\joaol\desktop\meujogo\include\entidade.h
+1795472714 c:\users\joaol\desktop\meujogo\include\entidade.h
 	"Ente.h"
 
 1795397421 c:\users\joaol\desktop\meujogo\include\ente.h
@@ -728,7 +728,7 @@
 1794701176 c:\users\joaol\desktop\meujogo\include\projetil_acido.h
 	"Entidade.h"
 
-1795398011 source:c:\users\joaol\desktop\meujogo\src\capanga_cogumelo.cpp
+1795470173 source:c:\users\joaol\desktop\meujogo\src\capanga_cogumelo.cpp
 	"Capanga_Cogumelo.h"
 	"Jogador.h"
 
@@ -743,7 +743,7 @@
 1795397421 source:c:\users\joaol\desktop\meujogo\src\ente.cpp
 	"Ente.h"
 
-1794170272 source:c:\users\joaol\desktop\meujogo\src\entidade.cpp
+1795472714 source:c:\users\joaol\desktop\meujogo\src\entidade.cpp
 	"Entidade.h"
 
 1795468851 source:c:\users\joaol\desktop\meujogo\src\fase.cpp
@@ -1349,7 +1349,7 @@
 1795468917 c:\users\joaol\desktop\meujogo\include\planta_acida.h
 	"CriaturaHostil.h"
 
-1795468851 source:c:\users\joaol\desktop\meujogo\src\jogador.cpp
+1795476569 source:c:\users\joaol\desktop\meujogo\src\jogador.cpp
 	"Jogador.h"
 	"Plataforma.h"
 
@@ -1379,7 +1379,7 @@
 	"Projetil_Acido.h"
 	"Jogador.h"
 
-1795271295 source:c:\users\joaol\desktop\meujogo\src\plataforma.cpp
+1795476569 source:c:\users\joaol\desktop\meujogo\src\plataforma.cpp
 	"Plataforma.h"
 	"Jogador.h"
 
@@ -1399,6 +1399,6 @@
 	"stdafx.h"
 	"Jogador.h"
 
-1795469071 source:c:\users\joaol\desktop\meujogo\src\lava.cpp
+1795476569 source:c:\users\joaol\desktop\meujogo\src\lava.cpp
 	"Lava.h"
 

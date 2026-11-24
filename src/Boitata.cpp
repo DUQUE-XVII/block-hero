@@ -113,7 +113,11 @@ void Boitata::salvar()
 {
     x = posX;
     y = posY;
+
     salvarDataBuffer();
+
+    Salvamento << " " << vidas
+               << " " << contadorTempoFogo;
 }
 
 void Boitata::danificar(Jogador* pJogador)

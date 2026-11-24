@@ -46,5 +46,6 @@ class Jogador : public Personagem {
 
         int  getPontos() const;
         void adicionarPontos(int p);
+        void pararSubida();
 };
 

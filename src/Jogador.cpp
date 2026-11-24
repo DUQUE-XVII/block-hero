@@ -3,7 +3,7 @@
 
 
 Jogador::Jogador()
-    :   vidas(20),
+    :   vidas(30),
         pontos(0),
         velocidadeX(0),
         velocidadeY(0),
@@ -108,6 +108,11 @@ void Jogador::pararQueda()
 void Jogador::salvar()
 {
     salvarDataBuffer();
+     Salvamento << " "
+               << vidas << " "
+               << pontos << " "
+               << velocidadeX << " "
+               << velocidadeY;
 }
 
 void Jogador::receberDano(int dano) {
@@ -131,6 +136,11 @@ void Jogador::arremessar(float direcaoX)
     velocidadeX = direcaoX * 14.f; // Empurra forte para o lado
     velocidadeY = -10.f;           // Joga para cima
     noChao = false;
+}
+
+void Jogador::pararSubida()
+{
+    velocidadeY = 0.f;
 }
 
 void Jogador::reduzirVelocidade()
