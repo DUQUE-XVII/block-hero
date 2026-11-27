@@ -12,7 +12,7 @@ private:
     int tempoRecargaFogo;
     int contadorTempoFogo;
     Projetil_Acido* pFogo;
-    int pontosAoMorrer;
+
 
 public:
     Boitata();
@@ -20,8 +20,10 @@ public:
 
     void executar() override;
     void mover() override;
+
     void salvar() override;
     void danificar(Jogador* pJogador) override;
+    void setEstado(int v, int cont);
 
     Projetil_Acido* getProjetil() const;
 };

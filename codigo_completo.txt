@@ -1,0 +1,2330 @@
+#ifndef BOITATA_H
+#define BOITATA_H
+
+#include "CriaturaHostil.h"
+
+class Projetil_Acido;
+
+class Boitata : public CriaturaHostil
+{
+private:
+    float velocidadePerseguicao;
+    int tempoRecargaFogo;
+    int contadorTempoFogo;
+    Projetil_Acido* pFogo;
+    int pontosAoMorrer;
+
+public:
+    Boitata();
+    virtual ~Boitata();
+
+    void executar() override;
+    void mover() override;
+    void salvar() override;
+    void danificar(Jogador* pJogador) override;
+
+    Projetil_Acido* getProjetil() const;
+};
+
+#endif
+#ifndef CAPANGA_COGUMELO_H
+#define CAPANGA_COGUMELO_H
+
+#include    "CriaturaHostil.h"
+#include    "stdafx.h"
+#include    "Jogador.h"
+
+class Capanga_Cogumelo : public CriaturaHostil {
+private:
+    int direcao; // 1 = Direita, -1 = Esquerda
+    float velocidadeAndar;
+
+public:
+    Capanga_Cogumelo();
+    ~Capanga_Cogumelo();
+
+
+    void mover() override;
+    void salvar() override;
+
+    void executar(); // Apenas anda na dire√ß√£o atual
+    void danificar(Jogador* pJogador);
+
+    // O Gerenciador de F√≠sica vai chamar esse m√©todo quando o cogumelo bater na parede
+    void inverterDirecao();
+    bool estaVivo();
+
+
+};
+
+#endif
+#ifndef CRIATURA_HOSTIL_H
+#define CRIATURA_HOSTIL_H
+
+#include    "Jogador.h"
+#include    "stdafx.h"
+#include    "Personagem.h"
+class CriaturaHostil: public Personagem{
+protected:
+    int id;
+    int vidas;
+    float posX, posY;
+    int danoContato;
+
+    Jogador* alvo; // O Enemy(Easy) vai ignorar isso, mas os outros usam.
+    int pontosAoMorrer;
+
+public:
+    CriaturaHostil();
+    virtual ~CriaturaHostil();
+
+    // M√©todos puros
+    virtual void executar() = 0;
+    virtual void danificar(Jogador* pJogador) = 0;
+    virtual void atualizar(){executar();} // Chamado pelo GerenciadorFisico para atualizar a l√≥gica do inimigo
+
+    void definirAlvo(Jogador* pJogador);
+    bool estaVivo() const;
+    void receberDano(int dano);
+
+    void setPosicao(float novoX, float novoY);
+    float getX() const;
+    float getY() const;
+    int getVida() const;
+    int getPontos() const;
+};
+
+#endif
+#pragma once
+
+#include    "stdafx.h"
+#include    "GerenciadorGrafico.h"
+
+class Ente{
+
+    protected:
+        int id;
+        static GerenciadorGrafico* pGG ;
+        sf::RectangleShape* retangulo;
+        sf::Texture textura;
+        bool carregarTextura(const std::string& caminho,
+                             const sf::IntRect& area = sf::IntRect());
+
+    public:
+        Ente();
+        virtual ~Ente();
+
+        virtual void executar() =0;
+
+        sf::RectangleShape* getForma();
+        void desenhar();
+        static void setGG(GerenciadorGrafico *GG);
+
+};
+#pragma once
+
+#include    "Ente.h"
+
+
+class Entidade : public Ente {
+
+    protected:
+        float x;
+        float y;
+        ostringstream Salvamento;
+
+        void salvarDataBuffer();
+
+    public:
+        Entidade();
+        virtual ~Entidade();
+
+        virtual void executar() = 0;
+        virtual void salvar() = 0;
+        string getDadosSalvos() const;
+        void setPosicao(float novoX, float novoY);
+
+};
+#ifndef FASE_H
+#define FASE_H
+
+#include    "stdafx.h"
+#include    "Ente.h"
+#include    "Jogador.h"
+#include    "CriaturaHostil.h"
+#include    "Plataforma.h"
+#include    "Gerenciador_CL.h"
+#include    "ListaEntidade.h"
+#include    "Capanga_Cogumelo.h"
+
+class Fase : public Ente {
+     protected:
+        int numeroFase;
+        bool concluida;
+
+        int maxInimigos;
+        int maxObstaculos;
+
+
+        int numInimigos;        // NOVO
+        int numObstaculos;      // NOVO (n„o conta as 4 bordas da arena)
+
+        Jogador* pJogador;
+        Gerenciador_CL* pFisica;
+
+        ListaEntidades listaEntidades;
+        // REMOVIDOS: listaInimigos e listaPlataformas
+        vector<Plataforma*> gerarPlataformasAleatorias(int quantidade);
+
+        bool todosInimigosMortos() const;    // NOVO
+
+
+        vector<Plataforma*> gerarPlataformasAleatorias(int quantidade);
+
+        void criarLimitesArena();
+
+        void criarCapanga(float x, float y);
+        void criarPlataforma(float x, float y, int largura, int altura, Obstaculo* plataforma);
+
+        static std::mt19937& geradorAleatorio();
+        static int sortear(int minimo, int maximo);
+        void executarObstaculos();
+        void tornarPlataformasMoveis(const std::vector<Plataforma*>& plats,
+                             const std::vector<Plataforma*>& fixas = {});
+
+    public:
+        Fase(int num, Jogador* jogador,int limiteInimigos, int limiteObstaculos);
+        virtual ~Fase();
+
+        virtual void iniciarFase() = 0;
+        virtual void executar() = 0;
+        virtual void desenhar();
+
+        virtual void salvar(std::ostream& arquivo);
+        virtual void carregar() = 0;
+
+        Jogador* getJogador() const;
+        int getNumeroFase() const;
+        bool estaConcluida() const;
+        bool registrarInimigo(CriaturaHostil* inimigo);
+
+};
+
+#endif
+#ifndef FASE_BOSS_H
+#define FASE_BOSS_H
+
+#include    "Fase.h"
+#include    "Lava.h"
+
+
+class Fase_Boss : public Fase {
+
+
+    public:
+        Fase_Boss(Jogador* jogador);
+        ~Fase_Boss();
+
+        void iniciarFase() override;
+        void executar() override;
+
+
+        void carregar() override;
+};
+
+#endif
+#ifndef FASE_FOREST_H
+#define FASE_FOREST_H
+
+#include    "Fase.h"
+
+class Fase_Forest : public Fase {
+
+public:
+    Fase_Forest(Jogador* jogador);
+    ~Fase_Forest();
+
+    void iniciarFase() override;
+    void executar() override;
+
+    void criarLama(int x, int y);
+
+    void carregar() override;
+};
+
+#endif
+#pragma once
+
+#include "stdafx.h"
+
+class Ente;
+
+class GerenciadorGrafico{
+    private:
+        sf::RenderWindow obj;
+        sf::Font fonte;
+        bool fonteCarregada;
+
+    public:
+        GerenciadorGrafico();
+        ~GerenciadorGrafico();
+        void desenharEnte(Ente* pE = NULL);
+        void desenharTexto(const std::string& conteudo, float x, float y,
+                           unsigned int tamanho = 22);
+        sf::RenderWindow& getJanela();
+};
+#pragma once
+
+#include    "Jogador.h"
+#include    "GerenciadorGrafico.h"
+#include    "stdafx.h"
+#include    "Entidade.h"
+#include    "Obstaculo.h"
+#include    "CriaturaHostil.h"
+
+class Projetil_Acido;
+
+class Gerenciador_CL
+{
+private:
+    Jogador* pJog1;
+    list<Obstaculo*> LOs;
+    vector<CriaturaHostil*> LIs;
+    vector<Projetil_Acido*> LPs;
+
+public:
+    Gerenciador_CL();
+    ~Gerenciador_CL();
+
+    bool verificaColi(Entidade* pe1, Entidade* pe2) const;
+
+    void colisaoObstaculo();
+    void colisaoinimigo();
+    void colisaoProjetil();
+    void executar();
+
+    void incluirObstaculo(Obstaculo* p);
+    void getJogador(Jogador* jog);
+    void incluirInimigos(CriaturaHostil* p);
+    void incluirProjetil(Projetil_Acido* p);
+};
+#pragma once
+
+#include    "Personagem.h"
+#include    "stdafx.h"
+
+class Jogador : public Personagem {
+    private:
+        int pontos;
+
+        bool teclaCimaAnterior;
+        float velocidade = 4.f;
+        const float gravidade = 0.6f;
+        const float forcaPulo = -14.f;
+
+    public:
+        int vidas;
+        bool noChao;
+        float xAnterior;
+        float yAnterior;
+        float velocidadeX;
+        float velocidadeY;
+
+        Jogador();
+        virtual ~Jogador();
+
+        void executar();
+        void mover();
+        void salvar();
+
+        float getX() const;
+        float getY() const;
+        float getVelocidadeY() const;
+        float getYAnterior() const;
+
+        void setX(float novoX);
+        void setY(float novoY);
+        void pararQueda();
+
+        void receberDano(int dano);
+        void quicar();
+        void arremessar(float direcaoX);
+        bool estaVivo();
+
+        void reduzirVelocidade(int i);
+        void restaurarVelocidade();
+
+        int  getPontos() const;
+        void adicionarPontos(int p);
+        void pararSubida();
+};
+
+#pragma once
+
+#include    "stdafx.h"
+#include    "GerenciadorGrafico.h"
+#include    "Jogador.h"
+#include    "Ente.h"
+#include    "Fase.h"
+#include    "Fase_Forest.h"
+#include    "Fase_Boss.h"
+
+class Jogo {
+private:
+    Jogador pJog1;
+    GerenciadorGrafico pGG;
+    Fase* faseAtual;
+
+public:
+    Jogo();
+    ~Jogo();
+    void executar();
+};
+#pragma once
+
+#include    "Obstaculo.h"
+#include    "Jogador.h"
+
+class Lama : public Obstaculo{
+    int Lerdo;
+    int reduzir;
+    public:
+
+        Lama();
+        ~Lama();
+
+        void obstaculizar(Jogador* pJogador);
+        void executar();
+
+        void salvar();
+        bool reduzVelocidade();
+
+        int Chance();
+
+};
+#pragma once
+
+#include    "Obstaculo.h"
+#include    "stdafx.h"
+#include    "Jogador.h"
+
+
+class Lava : public Obstaculo{
+    private:
+        const int Dano;
+        sf::Clock relogioDano;   // controla o intervalo entre danos
+        int Probabilidade;
+    public:
+        Lava();
+        ~Lava();
+
+        void obstaculizar(Jogador* pJogador);
+        void executar();
+
+        void salvar();
+        int Chance();
+};
+#pragma once
+
+template <class TL>
+class Lista
+{
+private:
+
+    template <class TE>
+    class Elemento
+    {
+    private:
+        TE pInfo{};
+        Elemento<TE>* pProx;
+
+    public:
+        Elemento() : pProx(nullptr) {}
+
+        ~Elemento() = default;
+
+        void incluir(const TE& p)
+        {
+            pInfo = p;
+        }
+
+        void setProx(Elemento<TE>* p)
+        {
+            pProx = p;
+        }
+
+        Elemento<TE>* getProx() const
+        {
+            return pProx;
+        }
+
+        TE getInfo() const
+        {
+            return pInfo;
+        }
+    };
+
+    Elemento<TL>* pPrimeiro;
+    Elemento<TL>* pUltimo;
+    int quantidade;
+
+    // Impede cÛpia superficial da lista.
+    Lista() : pPrimeiro(nullptr), pUltimo(nullptr), quantidade(0) {}   // NOVO: quantidade(0)
+    Lista(const Lista&) = delete;
+    Lista& operator=(const Lista&) = delete;
+
+    public:
+
+        Lista() : pPrimeiro(nullptr), pUltimo(nullptr) {}
+
+        ~Lista()
+        {
+            limpar();
+        }
+
+        void incluir(const TL& p)
+        {
+            Elemento<TL>* novo = new Elemento<TL>();
+
+            novo->incluir(p);
+
+            if(pPrimeiro == nullptr)
+            {
+                pPrimeiro = novo;
+                pUltimo = novo;
+            }
+            else
+            {
+                pUltimo->setProx(novo);
+                pUltimo = novo;
+            }
+            ++quantidade;                                    }
+
+        void limpar()
+        {
+            Elemento<TL>* atual = pPrimeiro;
+
+            while(atual != nullptr)
+            {
+                Elemento<TL>* proximo = atual->getProx();
+
+                delete atual;
+
+                atual = proximo;
+            }
+
+            pPrimeiro = nullptr;
+            pUltimo = nullptr;
+            quantidade = 0;
+        }
+
+        int tamanho() const { return quantidade; }        // NOVO
+
+        template <class Funcao>
+        void percorrer(Funcao acao) const
+        {
+            Elemento<TL>* atual = pPrimeiro;
+
+            while(atual != nullptr)
+            {
+                acao(atual->getInfo());
+
+                atual = atual->getProx();
+            }
+        }
+
+        bool vazia() const
+        {
+            return pPrimeiro == nullptr;
+        }
+    };
+
+#pragma once
+
+#include "Lista.h"
+#include "Entidade.h"
+
+class ListaEntidades
+{
+private:
+    Lista<Entidade*> LEs;
+
+public:
+    ListaEntidades() = default;
+    ~ListaEntidades() = default;
+    ListaEntidades(const ListaEntidades&) = delete;
+    ListaEntidades& operator=(const ListaEntidades&) = delete;
+
+    void incluir(Entidade* p)
+    {
+        if(p != nullptr)
+            LEs.incluir(p);
+    }
+
+    // Executa todas as entidades da lista
+    void percorrer() const
+    {
+        LEs.percorrer([](Entidade* p)
+        {
+            if(p != nullptr)
+                p->executar();
+        });
+    }
+
+    // Desenha todas as entidades da lista
+    void desenhar() const
+    {
+        LEs.percorrer([](Entidade* p)
+        {
+            if(p != nullptr)
+                p->desenhar();
+        });
+    }
+
+    // Aplica uma aÁ„o qualquer a cada entidade (contar, procurar, salvar...)
+    template <class Funcao>
+    void paraCada(Funcao acao) const
+    {
+        LEs.percorrer(acao);
+    }
+
+    // Libera as entidades, exceto a poupada (que pertence a outro dono, ex.: o Jogador)
+    void destruir(const Entidade* poupada = nullptr)
+    {
+        LEs.percorrer([poupada](Entidade* p)
+        {
+            if(p != nullptr && p != poupada)
+                delete p;
+        });
+        LEs.limpar();
+    }
+
+    int  tamanho() const { return LEs.tamanho(); }
+    void limpar() { LEs.limpar(); }
+    bool vazia() const { return LEs.vazia(); }
+};
+#pragma once
+
+#include    "stdafx.h"
+#include    "Entidade.h"
+
+class Jogador;
+
+class Obstaculo : public Entidade
+{
+    protected:
+        bool dano;
+
+    public:
+        Obstaculo();
+        virtual ~Obstaculo();
+
+        void salvarDataBuffer();
+
+        virtual void executar() = 0;
+        virtual void salvar() = 0;
+        virtual void obstaculizar(Jogador* pJogador) = 0;
+        virtual bool reduzVelocidade();
+};
+#pragma once
+
+#include "Entidade.h"
+
+class Personagem : public Entidade
+{
+    protected:
+        int vidas;
+
+    public:
+        Personagem();
+        virtual ~Personagem();
+
+        virtual void executar() = 0;
+        virtual void salvar() = 0;
+        virtual void mover() = 0;
+};
+#pragma once
+
+#include "CriaturaHostil.h"
+
+class Projetil_Acido;
+
+class Planta_Acida : public CriaturaHostil
+{
+private:
+    int tempoRecarga;
+    int contadorTempo;
+    Projetil_Acido* pAcido;
+    int pontosAoMorrer;
+
+public:
+    Planta_Acida();
+    virtual ~Planta_Acida();
+
+    void executar() override;
+    void mover() override; // A planta √© fixa; n√£o precisa se deslocar.
+    void salvar() override;
+    void danificar(Jogador* pJogador) override;
+
+    Projetil_Acido* getProjetil() const;
+};
+#pragma once
+
+#include    "Obstaculo.h"
+#include    "Gerenciador_CL.h"
+
+class Jogador;
+
+class Plataforma : public Obstaculo
+{
+    private:
+        int altura;
+        int largura;
+        bool  movel = false;
+        float yBase = 0.f;           // ponto mais baixo (posiÁ„o original)
+        float amplitude = 0.f;       // quanto sobe a partir de yBase
+        float velocidadeMov = 0.f;   // px por frame
+        int   direcao = -1;          // -1 sobe, +1 desce
+        float deslocamentoY = 0.f;   // quanto andou neste frame
+        Jogador* jogadorApoiado = nullptr;
+
+
+    public:
+        Plataforma();
+        Plataforma(int x, int y, int largura, int altura);
+        virtual ~Plataforma();
+
+        void executar() override;
+        void salvar() override;
+        void obstaculizar(Jogador* pJogador) override;
+
+        void tornarMovel(float amplitude, float velocidade);
+        bool ehMovel() const;
+
+    };
+#pragma once
+
+#include "Entidade.h"
+
+// O proj√©til √© uma Entidade para poder participar do sistema de colis√µes.
+class Projetil_Acido : public Entidade
+{
+private:
+    float velX;
+    int dano;
+    bool ativo;
+
+public:
+    Projetil_Acido();
+    virtual ~Projetil_Acido();
+
+    void executar() override;
+    void salvar() override;
+
+    void ativar(float xInicial, float yInicial, float direcaoX);
+    void desativar();
+    bool estaAtivo() const;
+    int getDano() const;
+};
+#ifndef _STDAFX_H
+#define _STDAFX_H
+
+
+#include    <stdio.h>
+#include    <string.h>
+
+#include    <iostream>
+#include    <fstream>
+
+#include    <string>
+#include    <SFML/Graphics.hpp>
+
+#include    <sstream>
+#include    <SFML/Window/Keyboard.hpp>
+
+#include    <vector>
+#include    <list>
+
+#include    <set>
+#include    <cmath>
+
+#include    <random>
+#include    <algorithm>
+
+#include    <ostream>
+#include    <cstdlib>
+
+#include    <ctime>
+
+using namespace std;
+using std::cout;
+using std::endl;
+using std::cin;
+
+#endif // _STDAFX_H
+#include "Boitata.h"
+#include "Projetil_Acido.h"
+#include "Jogador.h"
+
+Boitata::Boitata()
+    : velocidadePerseguicao(1.5f),
+      tempoRecargaFogo(120), // 120 quadros: aproximadamente 2 segundos a 60 FPS
+      contadorTempoFogo(0),
+      pFogo(new Projetil_Acido()),
+      pontosAoMorrer(1000)
+{
+    posX = 600.f;
+    posY = 200.f;
+    x = posX;
+    y = posY;
+    vidas = 100;
+    danoContato = 5;
+
+    retangulo->setSize({97.f, 60.f});
+    retangulo->setFillColor(sf::Color(190, 45, 35));
+    carregarTextura("assets/Inimigos/Boitata.png");
+    retangulo->setPosition({posX, posY});
+
+    // Reutiliza a entidade de proj√©til do projeto, mas d√° a ela apar√™ncia de fogo.
+    pFogo->getForma()->setFillColor(sf::Color(255, 105, 20));
+}
+
+Boitata::~Boitata()
+{
+    delete pFogo;
+    pFogo = nullptr;
+}
+
+void Boitata::executar()
+{
+    // O proj√©til precisa continuar andando mesmo quando o Boitat√° n√£o tem alvo.
+    if (pFogo != nullptr)
+        pFogo->executar();
+
+    if (!estaVivo() || alvo == nullptr)
+        return;
+
+    mover();
+
+    // S√≥ dispara novamente quando o proj√©til anterior j√° saiu da tela.
+    if (pFogo->estaAtivo())
+        return;
+
+    ++contadorTempoFogo;
+    if (contadorTempoFogo < tempoRecargaFogo)
+        return;
+
+    const sf::Vector2f posAlvo = alvo->getForma()->getPosition();
+    const sf::Vector2f tamanhoAlvo = alvo->getForma()->getSize();
+    const float centroAlvo = posAlvo.x + tamanhoAlvo.x / 2.f;
+    const float centroBoitata = posX + retangulo->getSize().x / 2.f;
+    const float direcao = (centroAlvo >= centroBoitata) ? 1.f : -1.f;
+
+    const float larguraProjetil = pFogo->getForma()->getSize().x;
+    const float inicioX = (direcao > 0.f)
+        ? posX + retangulo->getSize().x
+        : posX - larguraProjetil;
+    const float inicioY = posY + retangulo->getSize().y / 2.f;
+
+    pFogo->ativar(inicioX, inicioY, direcao);
+    contadorTempoFogo = 0;
+}
+
+void Boitata::mover()
+{
+    if (alvo == nullptr)
+        return;
+
+    const sf::Vector2f posAlvo = alvo->getForma()->getPosition();
+    const sf::Vector2f tamanhoAlvo = alvo->getForma()->getSize();
+    const float centroAlvoX = posAlvo.x + tamanhoAlvo.x / 2.f;
+    const float centroAlvoY = posAlvo.y + tamanhoAlvo.y / 2.f;
+
+    const float centroBoitataX = posX + retangulo->getSize().x / 2.f;
+    const float centroBoitataY = posY + retangulo->getSize().y / 2.f;
+
+    // Movimento horizontal (eixo X)
+    if (centroAlvoX > centroBoitataX)
+        posX += velocidadePerseguicao;
+    else if (centroAlvoX < centroBoitataX)
+        posX -= velocidadePerseguicao;
+
+    // Movimento vertical (eixo Y)
+    const float velocidadeVertical = velocidadePerseguicao * 0.8f;
+    if (centroAlvoY > centroBoitataY)
+        posY += velocidadeVertical;
+    else if (centroAlvoY < centroBoitataY)
+        posY -= velocidadeVertical;
+
+    // Limites horizontais da arena (paredes em x=20 e x=780)
+    if (posX < 20.f)
+        posX = 20.f;
+    if (posX + retangulo->getSize().x > 780.f)
+        posX = 780.f - retangulo->getSize().x;
+
+    // Limites verticais da arena (teto em y=20 e ch√£o em y=560)
+    if (posY < 20.f)
+        posY = 20.f;
+    if (posY + retangulo->getSize().y > 560.f)
+        posY = 560.f - retangulo->getSize().y;
+
+    x = posX;
+    y = posY;
+    retangulo->setPosition({posX, posY});
+}
+
+void Boitata::salvar()
+{
+    x = posX;
+    y = posY;
+
+    salvarDataBuffer();
+
+    Salvamento << " " << vidas
+               << " " << contadorTempoFogo;
+
+    pFogo->salvar();
+    Salvamento << " " << pFogo->getDadosSalvos();
+}
+
+void Boitata::danificar(Jogador* pJogador)
+{
+    if (pJogador != nullptr)
+    {
+        pJogador->receberDano(danoContato);
+
+        const float centroBoitata = posX + retangulo->getSize().x / 2.f;
+        const float centroJogador = pJogador->getX() + pJogador->getForma()->getSize().x / 2.f;
+        const float direcao = (centroJogador >= centroBoitata) ? 1.f : -1.f;
+
+        pJogador->arremessar(direcao);
+    }
+}
+
+Projetil_Acido* Boitata::getProjetil() const
+{
+    return pFogo;
+}
+#include "Capanga_Cogumelo.h"
+#include "Jogador.h"
+
+Capanga_Cogumelo::Capanga_Cogumelo() {
+    posX = 600; posY = 510;
+    vidas = 1;
+    direcao = -1;
+    velocidadeAndar = 2.5f;
+    danoContato = 1;
+    sf::Color marrom(139, 69, 19);
+
+    retangulo->setSize({44.f, 50.f});
+    retangulo->setFillColor(marrom);
+    carregarTextura("assets/Inimigos/Cogumelo.png");
+    retangulo->setPosition({posX, posY});
+}
+Capanga_Cogumelo::~Capanga_Cogumelo() {}
+
+void Capanga_Cogumelo::executar() {
+     if (!estaVivo())
+        return;
+    mover();
+}
+
+void Capanga_Cogumelo::inverterDirecao() {
+    direcao *= -1;
+}
+
+void Capanga_Cogumelo::danificar(Jogador* pJogador) {
+    pJogador->receberDano(danoContato);
+
+        const float centroCogumelo = posX + retangulo->getSize().x / 2.f;
+        const float centroJogador = pJogador->getX() + pJogador->getForma()->getSize().x / 2.f;
+        const float direcao = (centroJogador >= centroCogumelo) ? 1.f : -1.f;
+    pJogador->arremessar(direcao);
+
+    inverterDirecao();
+}
+
+void Capanga_Cogumelo::mover(){
+    posX += velocidadeAndar * direcao;
+    retangulo->setPosition({posX,posY});
+    if(posX <150 || posX>700)
+        inverterDirecao();
+}
+
+void Capanga_Cogumelo::salvar()
+{
+    x = posX;
+    y = posY;
+
+    salvarDataBuffer();
+
+    Salvamento << " " << vidas
+               << " " << direcao;
+}
+
+bool Capanga_Cogumelo::estaVivo(){
+    if(vidas <= 0)
+        return false;
+    return true;
+
+}
+
+#include "CriaturaHostil.h"
+
+CriaturaHostil::CriaturaHostil() : id(0), vidas(10), posX(0), posY(0),
+    danoContato(1), pontosAoMorrer(100), alvo(nullptr)
+{
+}
+CriaturaHostil::~CriaturaHostil() {}
+
+int CriaturaHostil::getPontos() const { return pontosAoMorrer; }
+
+void CriaturaHostil::definirAlvo(Jogador* pJogador) {
+    alvo = pJogador;
+}
+int CriaturaHostil::getVida() const{return vidas;}
+
+bool CriaturaHostil::estaVivo() const { return vidas > 0; }
+
+void CriaturaHostil::receberDano(int dano) { vidas -= dano; }
+
+float CriaturaHostil::getX() const { return posX; }
+
+float CriaturaHostil::getY() const { return posY; }
+
+void CriaturaHostil::setPosicao(float novoX, float novoY) {
+    posX = novoX;
+    posY = novoY;
+    x = novoX;
+    y = novoY;
+    if (retangulo != nullptr) {
+        retangulo->setPosition({posX, posY});
+    }
+}
+#include    "Ente.h"
+
+GerenciadorGrafico* Ente::pGG = nullptr;
+Ente::Ente()
+{
+    retangulo = new sf::RectangleShape();
+}
+
+Ente::~Ente()
+{
+    delete retangulo;
+    retangulo = nullptr;
+}
+
+void Ente::executar(){
+}
+
+void Ente::desenhar(){
+    if (pGG != nullptr) {
+        pGG->desenharEnte(this);
+    }
+
+}
+
+void Ente::setGG(GerenciadorGrafico* GG){
+    pGG = GG;
+
+}
+
+sf::RectangleShape* Ente::getForma(){
+    return retangulo;
+
+ }
+
+ bool Ente::carregarTextura(const std::string& caminho, const sf::IntRect& area)
+{
+    if (!textura.loadFromFile(caminho, false, area))
+        return false;                       // arquivo n„o achado
+
+    textura.setSmooth(true);
+    retangulo->setTexture(&textura, true);  // true = ajusta ao tamanho da textura
+    retangulo->setFillColor(sf::Color::White); // evita "tingir" a imagem
+    return true;
+}
+#include "Entidade.h"
+
+Entidade::Entidade()
+    : x(0), y(0)
+{
+}
+
+Entidade::~Entidade()
+{
+}
+
+string Entidade::getDadosSalvos() const
+{
+    return Salvamento.str();
+}
+
+void Entidade::setPosicao(float novoX, float novoY)
+{
+    x = novoX;
+    y = novoY;
+
+    retangulo->setPosition({
+        novoX,
+        novoY
+    });
+}
+
+void Entidade::salvarDataBuffer()
+{
+    Salvamento.str("");
+    Salvamento.clear();
+
+    Salvamento << x << " " << y;
+}
+#include    "Fase.h"
+#include    "Boitata.h"
+#include    "Planta_Acida.h"
+#include    "Lama.h"
+#include    "Lava.h"
+
+Fase::Fase(int num, Jogador* jogador, int limiteInimigos, int limiteObstaculos)
+    : numeroFase(num),
+      concluida(false),
+      maxInimigos(limiteInimigos),
+      maxObstaculos(limiteObstaculos),
+      numInimigos(0),
+      numObstaculos(0),
+      pJogador(jogador)
+{
+    pFisica = new Gerenciador_CL();
+}
+
+Fase::~Fase() {
+    delete pFisica;
+    pFisica = nullptr;
+
+    listaEntidades.destruir(pJogador);   // o Jogador pertence ao Jogo
+}
+
+std::mt19937& Fase::geradorAleatorio()
+{
+    static std::mt19937 gerador{std::random_device{}()};
+    return gerador;
+}
+
+int Fase::sortear(int minimo, int maximo)
+{
+    return std::uniform_int_distribution<int>(minimo, maximo)(geradorAleatorio());
+}
+
+void Fase::criarLimitesArena() {
+    Obstaculo* limites[] = {
+        new Plataforma(0, 560, 800, 40),    // ch„o
+        new Plataforma(0, 0, 800, 20),      // teto
+        new Plataforma(0, 0, 20, 600),      // parede esquerda
+        new Plataforma(780, 0, 20, 600)     // parede direita
+    };
+
+    for (Obstaculo* p : limites) {
+        pFisica->incluirObstaculo(p);
+        listaEntidades.incluir(p);
+    }
+}
+
+void Fase::desenhar() {
+    listaEntidades.desenhar();   // jogador, obst·culos, inimigos e os projÈteis deles
+
+    if (pGG != nullptr && pJogador != nullptr) {
+        pGG->desenharTexto("Pontos: " + std::to_string(pJogador->getPontos()),
+                           30.f, 28.f);
+    }
+}
+
+void Fase::criarCapanga(float x, float y)
+{
+     Capanga_Cogumelo* capanga = new Capanga_Cogumelo();
+
+    capanga->setPosicao(x, y);
+
+    if (!registrarInimigo(capanga))
+        delete capanga;
+}
+void Fase::criarPlataforma(float x, float y, int largura, int altura,
+    Obstaculo* plataforma)
+{
+    if (numObstaculos >= maxObstaculos)
+        return;
+
+    plataforma->getForma()->setSize({
+        static_cast<float>(largura),
+        static_cast<float>(altura)
+    });
+    plataforma->setPosicao(x, y);
+
+    ++numObstaculos;
+    pFisica->incluirObstaculo(plataforma);
+    listaEntidades.incluir(plataforma);
+}
+
+bool Fase::registrarInimigo(CriaturaHostil* inimigo)
+{
+    if (inimigo == nullptr || numInimigos >= maxInimigos)
+        return false;
+
+    ++numInimigos;
+    pFisica->incluirInimigos(inimigo);
+    listaEntidades.incluir(inimigo);
+
+    return true;
+}
+
+bool Fase::todosInimigosMortos() const
+{
+    bool todosMortos = true;
+
+    listaEntidades.paraCada([&](Entidade* e) {
+        CriaturaHostil* inimigo = dynamic_cast<CriaturaHostil*>(e);
+        if (inimigo != nullptr && inimigo->estaVivo())
+            todosMortos = false;
+    });
+
+    return todosMortos;
+}
+vector<Plataforma*> Fase::gerarPlataformasAleatorias(int quantidade)
+{
+    auto sorteia = [&](int a, int b) { return sortear(a, b); };
+
+
+    const int andares[3] = {440, 330, 220}; // topo de cada andar
+    const int espessura  = 20;
+    const int xMin = 40, xMax = 760;        // dentro das paredes (20..780)
+    const int folga   = 60;                 // v„o mÌnimo no mesmo andar
+    const int alcance = 110;                // dist‚ncia m·x. para subir de andar
+
+    struct Dados { int andar, x, largura; };
+    vector<Dados> feitas;
+    vector<Plataforma*> criadas;
+    int maiorAndar = -1;
+
+    for (int tentativa = 0; tentativa < 300 && (int)criadas.size() < quantidade; ++tentativa)
+    {
+        // Respeita o limite de obst·culos (os 4 primeiros s„o as bordas da arena)
+        if (numObstaculos >= maxObstaculos)
+            break;
+
+        int andar   = sorteia(0, std::min(maiorAndar + 1, 2));
+        int largura = sorteia(110, 200);
+        int x       = sorteia(xMin, xMax - largura);
+        int y       = andares[andar] + sorteia(-8, 8);
+
+        bool ok = true;
+        bool temApoio = (andar == 0);
+        for (const Dados& d : feitas)
+        {
+            int vao = std::max(x - (d.x + d.largura), d.x - (x + largura));
+            if (d.andar == andar && vao < folga)           { ok = false; break; }
+            if (d.andar == andar - 1 && vao <= alcance)    temApoio = true;
+        }
+        if (!ok || !temApoio)
+            continue;
+
+        Plataforma* p = new Plataforma(x, y, largura, espessura);
+        criarPlataforma(x, y, largura, espessura, p);
+        criadas.push_back(p);
+        feitas.push_back({andar, x, largura});
+        maiorAndar = std::max(maiorAndar, andar);
+    }
+    return criadas;
+}
+
+bool Fase::registrarInimigo(CriaturaHostil* inimigo)
+{
+    if (inimigo == nullptr || listaInimigos.size() >= maxInimigos)
+        return false;
+
+    listaInimigos.push_back(inimigo);
+    pFisica->incluirInimigos(inimigo);
+    listaEntidades.incluir(inimigo);
+
+    return true;
+}
+
+Jogador* Fase::getJogador() const { return pJogador; }
+
+int Fase::getNumeroFase() const { return numeroFase; }
+
+bool Fase::estaConcluida() const { return concluida; }
+
+void Fase::salvar(std::ostream& arquivo)
+{
+    arquivo << "FASE " << numeroFase << "\n";
+    arquivo << "CONCLUIDA " << concluida << "\n";
+    arquivo << "ENTIDADES " << listaEntidades.tamanho() << "\n";
+
+    listaEntidades.paraCada([&](Entidade* e)
+    {
+        if (e == nullptr) return;
+        e->salvar();
+
+        if (e == pJogador)                              arquivo << "JOGADOR ";
+        else if (dynamic_cast<Lava*>(e))                arquivo << "LAVA ";
+        else if (dynamic_cast<Lama*>(e))                arquivo << "LAMA ";
+        else if (dynamic_cast<Plataforma*>(e))          arquivo << "PLATAFORMA ";
+        else if (dynamic_cast<Capanga_Cogumelo*>(e))    arquivo << "CAPANGA ";
+        else if (dynamic_cast<Boitata*>(e))             arquivo << "BOITATA ";
+        else if (dynamic_cast<Planta_Acida*>(e))        arquivo << "PLANTA ";
+
+        arquivo << e->getDadosSalvos() << "\n";
+    });
+}
+
+
+
+void Fase::executarObstaculos()
+{
+    for (Obstaculo* o : listaPlataformas)
+        if (o != nullptr)
+            o->executar();
+}
+
+void Fase::tornarPlataformasMoveis(const vector<Plataforma*>& plats,
+                                   const vector<Plataforma*>& fixas)
+{
+    const float alturaHeroi = (pJogador != nullptr)
+        ? pJogador->getForma()->getSize().y : 40.f;
+    const float folgaMinima = alturaHeroi + 15.f;   // espaÁo livre mÌnimo acima do herÛi
+    const float amplitudeMax = 40.f;
+
+    for (Plataforma* p : plats)
+    {
+        if (std::find(fixas.begin(), fixas.end(), p) != fixas.end())
+            continue;                                // tem lama ou planta em cima
+
+        sf::FloatRect a = p->getForma()->getGlobalBounds();
+
+        // Parte de baixo do que est· logo acima (o teto conta: baixo = 20)
+        float baixoAcima = 20.f;
+        for (Obstaculo* o : listaPlataformas)
+        {
+            Plataforma* q = dynamic_cast<Plataforma*>(o);
+            if (q == nullptr || q == p) continue;
+
+            sf::FloatRect b = q->getForma()->getGlobalBounds();
+            bool sobrepoeX = a.position.x < b.position.x + b.size.x &&
+                             b.position.x < a.position.x + a.size.x;
+            float baixoQ = b.position.y + b.size.y;
+
+            if (sobrepoeX && baixoQ <= a.position.y)
+                baixoAcima = std::max(baixoAcima, baixoQ);
+        }
+
+        float folgaAcima = a.position.y - baixoAcima;
+        float amplitude  = std::min(amplitudeMax, folgaAcima - folgaMinima);
+        if (amplitude < 15.f)
+            continue;                                // sem espaÁo para valer a pena
+
+        float velocidade = sortear(5, 12) / 10.f;    // 0.5 a 1.2 px por frame
+        p->tornarMovel(amplitude, velocidade);
+    }
+}
+
+void Fase::tornarPlataformasMoveis(const vector<Plataforma*>& plats,
+                                   const vector<Plataforma*>& fixas)
+{
+    const float alturaHeroi = (pJogador != nullptr)
+        ? pJogador->getForma()->getSize().y : 40.f;
+    const float folgaMinima = alturaHeroi + 15.f;   // espaÁo livre mÌnimo acima do herÛi
+    const float amplitudeMax = 40.f;
+
+    for (Plataforma* p : plats)
+    {
+        if (std::find(fixas.begin(), fixas.end(), p) != fixas.end())
+            continue;                                // tem lama ou planta em cima
+
+        sf::FloatRect a = p->getForma()->getGlobalBounds();
+
+        // Parte de baixo do que est· logo acima (o teto conta: baixo = 20)
+        float baixoAcima = 20.f;
+        for (Obstaculo* o : listaPlataformas)
+        {
+           float baixoAcima = 20.f;                       // parte de baixo do teto
+        listaEntidades.paraCada([&](Entidade* e)
+        {
+            Plataforma* q = dynamic_cast<Plataforma*>(e);
+            if (q == nullptr || q == p) return;
+
+            sf::FloatRect b = q->getForma()->getGlobalBounds();
+            bool sobrepoeX = a.position.x < b.position.x + b.size.x &&
+                             b.position.x < a.position.x + a.size.x;
+            float baixoQ = b.position.y + b.size.y;
+
+            if (sobrepoeX && baixoQ <= a.position.y)
+                baixoAcima = std::max(baixoAcima, baixoQ);
+        });
+    }
+}
+#include "Fase_Boss.h"
+#include "Boitata.h"
+#include "Projetil_Acido.h"
+
+
+Fase_Boss::Fase_Boss(Jogador* jogador)
+    : Fase(2, jogador, 3, 5) {}
+
+Fase_Boss::~Fase_Boss() {}
+
+void Fase_Boss::iniciarFase() {
+    std::cout << "[FASE 2] Iniciando a Caverna do Boitata...\n";
+
+    if (pJogador != nullptr) {
+        pJogador->setX(100.0f);
+        pJogador->setY(500.0f);
+        pFisica->getJogador(pJogador);
+        listaEntidades.incluir(pJogador);
+    }
+
+    criarLimitesArena();
+
+    // Po√ßas de lava (1 a 2) e plataformas dividem o limite maxObstaculos
+    vector<Plataforma*> plats = gerarPlataformasAleatorias(maxObstaculos - numLavas);
+    tornarPlataformasMoveis(plats);   // 4..3 plataformas
+
+    // Po√ßas no ch√£o (topo do ch√£o = y 560), longe do spawn do her√≥i (x 100..140)
+    int livreA_partirDe = 200;
+    for (int i = 0; i < numLavas; ++i) {
+        int largura = sortear(60, 100);
+        int restantes = numLavas - i - 1;
+        // reserva espa√ßo para as po√ßas que ainda faltam
+        int xMaximo = 760 - largura - restantes * 160;
+        int x = sortear(livreA_partirDe, xMaximo);
+
+        criarPlataforma(x, 548, largura, 12, new Lava());
+        livreA_partirDe = x + largura + 60;   // 60 px de v√£o at√© a pr√≥xima
+    }
+
+    // Capangas patrulhando o ch√£o
+    criarCapanga(250.0f, 510.0f);
+    criarCapanga(550.0f, 510.0f);
+
+    // Chef√£o
+    Boitata* boss = new Boitata();
+    boss->setPosicao(600.0f, 200.0f);
+    boss->definirAlvo(pJogador);
+
+    if (!registrarInimigo(boss)) {
+        delete boss;
+        return;
+    }
+    pFisica->incluirProjetil(boss->getProjetil());
+}
+void Fase_Boss::executar() {
+    if (pJogador == nullptr || !pJogador->estaVivo()) return;
+
+    listaEntidades.percorrer();   // jogador, obst√°culos e inimigos (os inimigos movem seus proj√©teis)
+    pFisica->executar();          // colis√µes
+    desenhar();
+
+    if (todosInimigosMortos())
+        concluida = true;
+}
+
+
+void Fase_Boss::carregar() { std::cout << "[CARREGAR] Fase 2 carregada.\n"; }
+#include    "Fase_Forest.h"
+#include    "Capanga_Cogumelo.h"
+#include    "Planta_Acida.h"
+#include    "Projetil_Acido.h"
+#include    <iostream>
+#include    "Lama.h"
+
+Fase_Forest::Fase_Forest(Jogador* jogador)
+    : Fase(1, jogador, 4, 8 ) {}
+
+Fase_Forest::~Fase_Forest() {}
+
+void Fase_Forest::iniciarFase() {
+    std::cout << "[FASE 1] Iniciando a Floresta...\n";
+
+    if (pJogador != nullptr) {
+        pJogador->setX(100.0f);
+        pJogador->setY(500.0f);
+        pFisica->getJogador(pJogador);
+        listaEntidades.incluir(pJogador);
+    }
+
+    criarLimitesArena();
+
+    // Lamas (1 a 3) e plataformas dividem o limite maxObstaculos:
+    // quanto mais lamas, menos plataformas.
+    int numLamas = sortear(1, 3);
+    int numPlats = maxObstaculos - numLamas;          // 6 - (1..3) = 5..3
+
+    vector<Plataforma*> plats = gerarPlataformasAleatorias(numPlats);
+    numLamas = min(numLamas, static_cast<int>(plats.size()));
+
+    // Embaralha para as lamas ca√≠rem em plataformas diferentes e aleat√≥rias
+    std::shuffle(plats.begin(), plats.end(), geradorAleatorio());
+
+    // A planta 2 vai na √∫ltima plataforma. Ela s√≥ divide espa√ßo com uma lama
+    // se houver uma lama em TODAS as plataformas (ex.: 3 lamas e 3 plataformas).
+    const int total = static_cast<int>(plats.size());
+    const bool plantaDivideComLama = (numLamas == total);
+
+    for (int i = 0; i < numLamas; ++i) {
+        sf::FloatRect b = plats[i]->getForma()->getGlobalBounds();
+        const bool metade = (plantaDivideComLama && i == total - 1);
+
+        // Na plataforma da planta a lama ocupa s√≥ a metade esquerda
+        int xLama      = static_cast<int>(b.position.x) + (metade ? 5 : 10);
+        int larguraLama = metade ? static_cast<int>(b.size.x / 2.f) - 5
+                                 : static_cast<int>(b.size.x) - 20;
+
+        criarPlataforma(xLama, static_cast<int>(b.position.y) - 10,
+                        larguraLama, 10, new Lama());
+    }
+
+    // Capangas no ch√£o
+    criarCapanga(300.0f, 510.0f);
+    criarCapanga(520.0f, 510.0f);
+
+    // Planta 1 no ch√£o
+    Planta_Acida* planta1 = new Planta_Acida();
+    planta1->setPosicao(680.0f, 510.0f);
+    planta1->definirAlvo(pJogador);
+
+    // Planta 2 sobre a √∫ltima plataforma
+    Planta_Acida* planta2 = new Planta_Acida();
+    planta2->definirAlvo(pJogador);
+    if (!plats.empty()) {
+        sf::FloatRect b  = plats.back()->getForma()->getGlobalBounds();
+        sf::Vector2f tam = planta2->getForma()->getSize();
+
+        float xPlanta = plantaDivideComLama
+            ? b.position.x + b.size.x - tam.x - 5.f          // canto direito
+            : b.position.x + (b.size.x - tam.x) / 2.f;       // centralizada
+
+        planta2->setPosicao(xPlanta, b.position.y - tam.y);
+    }
+        // Plataformas com lama ou planta ficam paradas; as demais se movem
+    vector<Plataforma*> fixas(plats.begin(), plats.begin() + numLamas);
+    if (!plats.empty())
+        fixas.push_back(plats.back());
+    tornarPlataformasMoveis(plats, fixas);
+
+    if (!registrarInimigo(planta1)) delete planta1;
+    else pFisica->incluirProjetil(planta1->getProjetil());
+
+    if (!registrarInimigo(planta2)) delete planta2;
+    else pFisica->incluirProjetil(planta2->getProjetil());
+}
+
+void Fase_Forest::executar() {
+    if (pJogador == nullptr || !pJogador->estaVivo()) return;
+
+    listaEntidades.percorrer();   // jogador, obst√°culos e inimigos (os inimigos movem seus proj√©teis)
+    pFisica->executar();          // colis√µes
+    desenhar();
+
+    if (todosInimigosMortos())
+        concluida = true;
+}
+
+
+
+void Fase_Forest::carregar() { std::cout << "[CARREGAR] Fase 1 carregada.\n"; }
+#include    "GerenciadorGrafico.h"
+#include    "Ente.h"
+
+GerenciadorGrafico::GerenciadorGrafico()
+    : obj(sf::VideoMode({800, 600}), "BLOCK HERO"),
+      fonteCarregada(false)
+{
+    obj.setFramerateLimit(60);
+
+    const char* caminhos[] = {"assets/Fonte/Fonte.TTF"};
+
+    for (const char* caminho : caminhos) {
+        if (fonte.openFromFile(caminho)) {
+            fonteCarregada = true;
+            break;
+        }
+    }
+
+    if (!fonteCarregada)
+        std::cout << "[GG] Nenhuma fonte encontrada. Coloque um .ttf em assets/Fonte/fonte.ttf\n";
+}
+
+
+GerenciadorGrafico::~GerenciadorGrafico(){
+
+}
+void GerenciadorGrafico::desenharTexto(const std::string& conteudo,
+float x, float y, unsigned int tamanho)
+{
+    if (!fonteCarregada)
+        return;
+
+    sf::Text texto(fonte, conteudo, tamanho);
+    texto.setFillColor(sf::Color::White);
+    texto.setOutlineColor(sf::Color::Black);
+    texto.setOutlineThickness(2.f);
+    texto.setPosition({x, y});
+
+    obj.draw(texto);
+}
+
+void GerenciadorGrafico::desenharEnte(Ente* pE){
+
+    if (pE != nullptr && pE->getForma() != nullptr)
+        {
+            obj.draw(*pE->getForma());
+        }
+}
+
+sf::RenderWindow& GerenciadorGrafico::getJanela(){
+    return obj;
+}
+#include "Gerenciador_CL.h"
+#include "Projetil_Acido.h"
+
+Gerenciador_CL::Gerenciador_CL()
+    : pJog1(nullptr)
+{
+}
+
+Gerenciador_CL::~Gerenciador_CL()
+{
+
+}
+
+bool Gerenciador_CL::verificaColi(Entidade* pe1, Entidade* pe2) const
+{
+    if (pe1 == nullptr || pe2 == nullptr ||
+        pe1->getForma() == nullptr || pe2->getForma() == nullptr)
+        return false;
+
+    return pe1->getForma()->getGlobalBounds()
+        .findIntersection(pe2->getForma()->getGlobalBounds()).has_value();
+}
+
+void Gerenciador_CL::colisaoObstaculo()
+{
+    if (pJog1 == nullptr)
+        return;
+
+    for (Obstaculo* pObstaculo : LOs)
+    {
+        if (pObstaculo == nullptr || !verificaColi(pJog1, pObstaculo))
+            continue;
+
+            pObstaculo->obstaculizar(pJog1);
+           if(!pObstaculo->reduzVelocidade())
+                pJog1->restaurarVelocidade();
+
+
+    }
+}
+
+void Gerenciador_CL::getJogador(Jogador* jog)
+{
+    pJog1 = jog;
+}
+
+void Gerenciador_CL::incluirObstaculo(Obstaculo* p)
+{
+    if (p != nullptr)
+        LOs.push_back(p);
+}
+
+void Gerenciador_CL::incluirInimigos(CriaturaHostil* p)
+{
+    if (p != nullptr)
+        LIs.push_back(p);
+}
+
+void Gerenciador_CL::incluirProjetil(Projetil_Acido* p)
+{
+    if (p != nullptr)
+        LPs.push_back(p);
+}
+
+void Gerenciador_CL::colisaoinimigo()
+{
+    if (pJog1 == nullptr)
+        return;
+
+    for (CriaturaHostil* pInimigo : LIs)
+    {
+        if (pInimigo == nullptr || !pInimigo->estaVivo())
+            continue;
+
+        if (!verificaColi(pJog1, pInimigo))
+            continue;
+
+        sf::FloatRect jogador = pJog1->getForma()->getGlobalBounds();
+        sf::FloatRect inimigo = pInimigo->getForma()->getGlobalBounds();
+
+        const bool sobrepoeX =
+            jogador.position.x + jogador.size.x > inimigo.position.x &&
+            jogador.position.x < inimigo.position.x + inimigo.size.x;
+
+        const bool caiuSobre =
+            pJog1->getVelocidadeY() > 0.f &&
+            pJog1->getYAnterior() + jogador.size.y <= inimigo.position.y &&
+            jogador.position.y + jogador.size.y >= inimigo.position.y &&
+            sobrepoeX;
+
+        if (caiuSobre)
+        {
+            pJog1->setY(inimigo.position.y - jogador.size.y);
+            pInimigo->receberDano(2);
+            pJog1->quicar();
+
+            if (!pInimigo->estaVivo())
+                pJog1->adicionarPontos(pInimigo->getPontos());
+        }
+        else
+        {
+            pInimigo->danificar(pJog1);
+        }
+    }
+}
+
+void Gerenciador_CL::colisaoProjetil()
+{
+    if (pJog1 == nullptr || !pJog1->estaVivo())
+        return;
+
+    for (Projetil_Acido* pProjetil : LPs)
+    {
+        if (pProjetil == nullptr || !pProjetil->estaAtivo())
+            continue;
+
+        if (verificaColi(pJog1, pProjetil))
+        {
+            pJog1->receberDano(pProjetil->getDano());
+            pProjetil->desativar();
+        }
+    }
+}
+
+void Gerenciador_CL::executar()
+{
+    colisaoObstaculo();
+    colisaoinimigo();
+    colisaoProjetil();
+}
+#include "Jogador.h"
+#include "Plataforma.h"
+
+
+Jogador::Jogador()
+    :   vidas(30),
+        pontos(0),
+        velocidadeX(0),
+        velocidadeY(0),
+        yAnterior(0),
+        noChao(true),
+        teclaCimaAnterior(false)
+{
+    x = 150;
+    y = 200;
+    xAnterior = x;
+    yAnterior = y;
+
+    retangulo->setSize({60.f, 40.f});
+    retangulo->setFillColor(sf::Color::White);
+    carregarTextura("assets/Jogador/Heroi.png");
+    retangulo->setPosition({x, y});
+}
+
+Jogador::~Jogador() {}
+
+void Jogador::executar()
+{
+    mover();
+}
+
+void Jogador::mover()
+{
+    xAnterior = x;
+    yAnterior = y;
+
+    // Movimento horizontal pelo teclado
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
+        x += velocidade;
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
+        x -= velocidade;
+
+
+    x += velocidadeX;
+    velocidadeX *= 0.85f;
+    if (std::abs(velocidadeX) < 0.2f)
+        velocidadeX = 0.f;
+
+
+    bool cima = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up);
+
+    if (cima && !teclaCimaAnterior && noChao)
+    {
+        velocidadeY = forcaPulo;
+    }
+
+    teclaCimaAnterior = cima;
+
+
+    noChao = false;
+    velocidadeY += gravidade;
+    y += velocidadeY;
+
+
+    retangulo->setPosition({x, y});
+}
+float Jogador::getX() const
+{
+    return x;
+}
+
+float Jogador::getY() const
+{
+    return y;
+}
+
+float Jogador::getVelocidadeY() const
+{
+    return velocidadeY;
+}
+
+float Jogador::getYAnterior() const
+{
+    return yAnterior;
+}
+
+void Jogador::setY(float novoY)
+{
+    y = novoY;
+
+    retangulo->setPosition({x,y});
+}
+
+void Jogador::setX(float novoX)
+{
+    x = novoX;
+
+    retangulo->setPosition({x,y});
+}
+
+void Jogador::pararQueda()
+{
+    velocidadeY = 0;
+    noChao = true;
+}
+
+void Jogador::salvar()
+{
+    salvarDataBuffer();
+     Salvamento << " "
+               << vidas << " "
+               << pontos << " "
+               << velocidadeX << " "
+               << velocidadeY;
+}
+
+void Jogador::receberDano(int dano) {
+    vidas -= dano;
+}
+
+void Jogador::quicar()
+{
+    velocidadeY = -10.f;
+    noChao = false;
+}
+
+bool Jogador::estaVivo(){
+    if(vidas<=0)
+        return false;
+    return true;
+}
+
+void Jogador::arremessar(float direcaoX)
+{
+    velocidadeX = direcaoX * 14.f; // Empurra forte para o lado
+    velocidadeY = -10.f;           // Joga para cima
+    noChao = false;
+}
+
+void Jogador::pararSubida()
+{
+    velocidadeY = 0.f;
+}
+
+void Jogador::reduzirVelocidade(int i)
+{
+    velocidade = i;
+}
+
+void Jogador::restaurarVelocidade()
+{
+    velocidade = 4.f;
+}
+
+int Jogador::getPontos() const
+{
+    return pontos;
+}
+
+void Jogador::adicionarPontos(int p)
+{
+    pontos += p;
+}
+#include "Jogo.h"
+
+Jogo::Jogo() : faseAtual(nullptr) {
+    Ente::setGG(&pGG);
+
+    faseAtual = new Fase_Forest(&pJog1);
+    faseAtual->iniciarFase();
+}
+
+Jogo::~Jogo() {
+    delete faseAtual;
+    faseAtual = nullptr;
+}
+
+void Jogo::executar() {
+    while (pGG.getJanela().isOpen()) {
+        while (const auto evento = pGG.getJanela().pollEvent()) {
+            if (evento->is<sf::Event::Closed>())
+                pGG.getJanela().close();
+        }
+
+        pGG.getJanela().clear(sf::Color::Black);
+
+        if (faseAtual != nullptr) {
+            faseAtual->executar();
+
+            // AvanÁa automaticamente para a Fase_Boss ao derrotar os inimigos da Fase 1
+            if (faseAtual->estaConcluida() && faseAtual->getNumeroFase() == 1) {
+                delete faseAtual;
+                faseAtual = new Fase_Boss(&pJog1);
+                faseAtual->iniciarFase();
+            }
+        }
+
+        pGG.getJanela().display();
+    }
+}
+#include    "Lama.h"
+#include    "Gerenciador_CL.h"
+Lama::Lama(){
+
+     retangulo->setSize({30.f , 1.f});
+     retangulo->setFillColor(sf::Color(139, 69, 19));
+     reduzir =2.f;
+
+}
+
+Lama::~Lama(){
+
+}
+
+void Lama::obstaculizar(Jogador* pJogador){
+    if(Lerdo)
+        pJogador->reduzirVelocidade(reduzir /2);
+    else
+        pJogador->reduzirVelocidade(reduzir);
+}
+
+void Lama::executar(){
+    Lerdo = rand() %100;
+}
+
+void Lama::salvar(){
+
+
+    salvarDataBuffer();
+
+    sf::Vector2f tamanho = retangulo->getSize();
+
+    Salvamento << " "
+               << tamanho.x << " "
+               << tamanho.y;
+
+}
+
+bool Lama::reduzVelocidade(){
+    return true;
+}
+
+
+#include    "Lava.h"
+
+Lava::Lava()
+    : Dano(3)
+{
+    retangulo->setSize({60.f, 12.f});               // criarPlataforma redefine
+    retangulo->setFillColor(sf::Color(255, 0, 0)); // vermelho
+    dano = true;
+    srand(time(NULL));
+}
+
+Lava::~Lava(){
+}
+
+void Lava::executar(){
+    Probabilidade = rand() %100;
+}
+
+void Lava::salvar(){
+    salvarDataBuffer();
+    Salvamento << " " << Dano;
+}
+
+void Lava::obstaculizar(Jogador* pJogador){
+    // SÛ causa dano a cada 0.5 s de contato
+    if (relogioDano.getElapsedTime().asSeconds() < 0.5f)
+        return;
+
+    relogioDano.restart();
+    if(Probabilidade <5)
+        pJogador->receberDano(Dano *2);
+    else
+        pJogador->receberDano(Dano);
+
+     pJogador->quicar();
+}
+
+
+#include "Jogo.h"
+
+int main()
+{
+    Jogo jogo;
+    jogo.executar();
+
+    return 0;
+}
+#include    "Obstaculo.h"
+
+Obstaculo::Obstaculo()
+{
+    dano = false;
+}
+
+Obstaculo::~Obstaculo()
+{
+}
+
+void Obstaculo::salvarDataBuffer()
+{
+    Entidade::salvarDataBuffer();
+
+    Salvamento << " " << dano;
+}
+
+bool Obstaculo::reduzVelocidade(){
+    return false;
+}
+#include "Personagem.h"
+
+Personagem::Personagem()
+    : vidas(7)
+{
+}
+
+Personagem::~Personagem()
+{
+}
+#include "Planta_Acida.h"
+#include "Projetil_Acido.h"
+#include "Jogador.h"
+
+Planta_Acida::Planta_Acida()
+    : tempoRecarga(90), contadorTempo(0), pAcido(new Projetil_Acido()),
+    pontosAoMorrer(150)
+{
+    // A planta fica apoiada no ch√£o (que come√ßa em y = 560).
+    x = 680.f;
+    y = 510.f;
+    vidas = 2;
+    danoContato = 1;
+
+    retangulo->setSize({47.f, 50.f});
+    retangulo->setFillColor(sf::Color(30, 150, 45));
+    carregarTextura("assets/Inimigos/Planta.png");
+    retangulo->setPosition({x, y});
+}
+
+Planta_Acida::~Planta_Acida()
+{
+    delete pAcido;
+    pAcido = nullptr;
+}
+
+void Planta_Acida::executar()
+{
+    if (!estaVivo())
+        return;
+
+    // O proj√©til continua se movimentando mesmo depois de ser disparado.
+    pAcido->executar();
+
+    if (alvo == nullptr || pAcido->estaAtivo())
+        return;
+
+    // Conta quadros: 90 quadros equivalem a cerca de 1,5 s em 60 FPS.
+    ++contadorTempo;
+    if (contadorTempo < tempoRecarga)
+        return;
+
+    // Compara os centros para decidir para qual lado atirar.
+    const float centroPlanta = x + retangulo->getSize().x / 2.f;
+    const float centroJogador = alvo->getX() + 20.f;
+    const float direcao = (centroJogador >= centroPlanta) ? 1.f : -1.f;
+
+    const float larguraProjetil = 14.f;
+    const float inicioX = (direcao > 0.f) ? x + retangulo->getSize().x : x - larguraProjetil;
+    const float inicioY = y + 20.f;
+
+    pAcido->ativar(inicioX, inicioY, direcao);
+    contadorTempo = 0;
+}
+
+void Planta_Acida::mover()
+{
+    // Planta estacion√°ria: o m√©todo existe para cumprir o contrato de Personagem.
+}
+
+void Planta_Acida::salvar()
+{
+    salvarDataBuffer();
+
+    Salvamento << " " << vidas
+               << " " << contadorTempo;
+
+    pAcido->salvar();
+    Salvamento << " " << pAcido->getDadosSalvos();
+}
+
+void Planta_Acida::danificar(Jogador* pJogador)
+{
+    if (pJogador != nullptr)
+        pJogador->receberDano(danoContato);
+}
+
+Projetil_Acido* Planta_Acida::getProjetil() const
+{
+    return pAcido;
+}
+#include    "Plataforma.h"
+#include    "Jogador.h"
+
+Plataforma::Plataforma(){
+
+}
+
+
+Plataforma::Plataforma(int x, int y, int largura, int altura)
+{
+    this->x = x;
+    this->y = y;
+
+    this->largura = largura;
+    this->altura = altura;
+
+    retangulo->setSize({
+        static_cast<float>(largura),
+        static_cast<float>(altura)
+    });
+
+    retangulo->setFillColor(sf::Color::Blue);
+
+    retangulo->setPosition({
+        static_cast<float>(x),
+        static_cast<float>(y)
+    });
+}
+
+Plataforma::~Plataforma()
+{
+}
+
+void Plataforma::executar()
+{
+     deslocamentoY = 0.f;
+
+    if (movel)
+    {
+        const float yTopo = yBase - amplitude;
+        float novoY = y + direcao * velocidadeMov;
+
+        if (novoY <= yTopo)       { novoY = yTopo; direcao = 1;  }   // chegou no alto: desce
+        else if (novoY >= yBase)  { novoY = yBase; direcao = -1; }   // chegou embaixo: sobe
+
+        deslocamentoY = novoY - y;
+        setPosicao(x, novoY);
+
+        // Leva junto o jogador que est· em cima
+        if (jogadorApoiado != nullptr)
+            jogadorApoiado->setY(jogadorApoiado->getY() + deslocamentoY);
+    }
+
+    jogadorApoiado = nullptr;
+}
+
+void Plataforma::salvar()
+{
+   salvarDataBuffer();
+    Salvamento << " " << largura << " " << altura
+               << " " << movel << " " << yBase << " " << amplitude
+               << " " << velocidadeMov << " " << direcao;
+}
+
+void Plataforma::obstaculizar(Jogador* pJogador)
+{
+    sf::FloatRect jogador = pJogador->getForma()->getGlobalBounds();
+    sf::FloatRect plataforma = this->getForma()->getGlobalBounds();
+
+    const float esquerdaJ = jogador.position.x;
+    const float direitaJ = jogador.position.x + jogador.size.x;
+
+    const float topoJ = jogador.position.y;
+    const float baixoJ = jogador.position.y + jogador.size.y;
+
+    const float esquerdaO = plataforma.position.x;
+    const float direitaO = plataforma.position.x + plataforma.size.x;
+
+    const float topoO = plataforma.position.y;
+    const float baixoO = plataforma.position.y + plataforma.size.y;
+
+    // Verifica se existe sobreposiÁ„o horizontal
+    const bool sobrepoeX =
+        direitaJ > esquerdaO &&
+        esquerdaJ < direitaO;
+
+    // Colis„o por cima: jogador est· caindo
+    // (toler‚ncia: a plataforma pode ter subido ao encontro do jogador neste frame)
+    const float tolerancia = 1.f + std::abs(deslocamentoY);
+
+    if (sobrepoeX &&
+        pJogador->getVelocidadeY() > 0.f &&
+        pJogador->getYAnterior() + jogador.size.y <= topoO + tolerancia &&
+        baixoJ >= topoO)
+    {
+        pJogador->setY(topoO - jogador.size.y);
+        pJogador->pararQueda();
+        jogadorApoiado = pJogador;      // <-- NOVO: ser· levado no prÛximo frame
+    }
+
+    // Colis„o por baixo: jogador est· subindo
+    else if (sobrepoeX &&
+             pJogador->getVelocidadeY() < 0.f &&
+             pJogador->getYAnterior() >= baixoO &&
+             topoJ <= baixoO)
+    {
+        pJogador->setY(baixoO);
+        pJogador->pararSubida();
+    }
+
+    // Atualiza os limites apÛs possÌveis correÁıes
+    jogador = pJogador->getForma()->getGlobalBounds();
+
+    const float esquerdaAtual = jogador.position.x;
+    const float direitaAtual = jogador.position.x + jogador.size.x;
+
+    const float topoAtual = jogador.position.y;
+    const float baixoAtual = jogador.position.y + jogador.size.y;
+
+    const bool sobrepoeY =
+        baixoAtual > topoO &&
+        topoAtual < baixoO;
+
+    // Colis„o pela esquerda
+    if (sobrepoeY &&
+        pJogador->xAnterior + jogador.size.x <= esquerdaO &&
+        direitaAtual >= esquerdaO)
+    {
+        pJogador->setX(esquerdaO - jogador.size.x);
+    }
+
+    // Colis„o pela direita
+    else if (sobrepoeY &&
+             pJogador->xAnterior >= direitaO &&
+             esquerdaAtual <= direitaO)
+    {
+        pJogador->setX(direitaO);
+    }
+}
+
+void Plataforma::tornarMovel(float amp, float velocidade)
+{
+    movel = true;
+    yBase = y;               // a posiÁ„o atual vira o ponto mais baixo
+    amplitude = amp;
+    velocidadeMov = velocidade;
+    direcao = -1;            // comeÁa subindo
+}
+
+bool Plataforma::ehMovel() const
+{
+    return movel;
+}
+#include "Projetil_Acido.h"
+
+Projetil_Acido::Projetil_Acido()
+    : velX(0.f), dano(1), ativo(false)
+{
+    retangulo->setSize({14.f, 8.f});
+    retangulo->setFillColor(sf::Color(80, 220, 40));
+    retangulo->setPosition({-100.f, -100.f});
+}
+
+Projetil_Acido::~Projetil_Acido()
+{
+}
+
+void Projetil_Acido::ativar(float xInicial, float yInicial, float direcaoX)
+{
+    x = xInicial;
+    y = yInicial;
+    velX = direcaoX * 5.f;
+    ativo = true;
+    retangulo->setPosition({x, y});
+}
+
+void Projetil_Acido::executar()
+{
+    if (!ativo)
+        return;
+
+    x += velX;
+    retangulo->setPosition({x, y});
+
+    // Desativa o proj√©til quando ele sai da √°rea de jogo.
+    if (x + retangulo->getSize().x < 0.f || x > 800.f)
+        desativar();
+}
+
+void Projetil_Acido::desativar()
+{
+    ativo = false;
+    retangulo->setPosition({-100.f, -100.f});
+}
+
+bool Projetil_Acido::estaAtivo() const
+{
+    return ativo;
+}
+
+int Projetil_Acido::getDano() const
+{
+    return dano;
+}
+
+void Projetil_Acido::salvar()
+{
+    salvarDataBuffer();
+
+    Salvamento << " " << velX
+               << " " << dano
+               << " " << ativo;
+}

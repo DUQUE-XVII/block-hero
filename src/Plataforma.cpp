@@ -33,15 +33,33 @@ Plataforma::~Plataforma()
 
 void Plataforma::executar()
 {
+     deslocamentoY = 0.f;
 
+    if (movel)
+    {
+        const float yTopo = yBase - amplitude;
+        float novoY = y + direcao * velocidadeMov;
+
+        if (novoY <= yTopo)       { novoY = yTopo; direcao = 1;  }   // chegou no alto: desce
+        else if (novoY >= yBase)  { novoY = yBase; direcao = -1; }   // chegou embaixo: sobe
+
+        deslocamentoY = novoY - y;
+        setPosicao(x, novoY);
+
+        // Leva junto o jogador que está em cima
+        if (jogadorApoiado != nullptr)
+            jogadorApoiado->setY(jogadorApoiado->getY() + deslocamentoY);
+    }
+
+    jogadorApoiado = nullptr;
 }
 
 void Plataforma::salvar()
 {
-    salvarDataBuffer();
-    Salvamento << " "
-               << largura << " "
-               << altura;
+   salvarDataBuffer();
+    Salvamento << " " << largura << " " << altura
+               << " " << movel << " " << yBase << " " << amplitude
+               << " " << velocidadeMov << " " << direcao;
 }
 
 void Plataforma::obstaculizar(Jogador* pJogador)
@@ -67,13 +85,17 @@ void Plataforma::obstaculizar(Jogador* pJogador)
         esquerdaJ < direitaO;
 
     // Colisão por cima: jogador está caindo
+    // (tolerância: a plataforma pode ter subido ao encontro do jogador neste frame)
+    const float tolerancia = 1.f + std::abs(deslocamentoY);
+
     if (sobrepoeX &&
         pJogador->getVelocidadeY() > 0.f &&
-        pJogador->getYAnterior() + jogador.size.y <= topoO &&
+        pJogador->getYAnterior() + jogador.size.y <= topoO + tolerancia &&
         baixoJ >= topoO)
     {
         pJogador->setY(topoO - jogador.size.y);
         pJogador->pararQueda();
+        jogadorApoiado = pJogador;      // <-- NOVO: será levado no próximo frame
     }
 
     // Colisão por baixo: jogador está subindo
@@ -114,4 +136,27 @@ void Plataforma::obstaculizar(Jogador* pJogador)
     {
         pJogador->setX(direitaO);
     }
+}
+
+void Plataforma::tornarMovel(float amp, float velocidade)
+{
+    movel = true;
+    yBase = y;               // a posição atual vira o ponto mais baixo
+    amplitude = amp;
+    velocidadeMov = velocidade;
+    direcao = -1;            // começa subindo
+}
+
+bool Plataforma::ehMovel() const
+{
+    return movel;
+}
+
+void Plataforma::configurarMovel(bool m, float yB, float amp, float vel, int dir)
+{
+    movel = m;
+    yBase = yB;
+    amplitude = amp;
+    velocidadeMov = vel;
+    direcao = dir;
 }

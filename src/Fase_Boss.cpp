@@ -1,10 +1,10 @@
 #include "Fase_Boss.h"
 #include "Boitata.h"
 #include "Projetil_Acido.h"
-
+#include <iostream>
 
 Fase_Boss::Fase_Boss(Jogador* jogador)
-    : Fase(2, jogador, 3, 5) {}
+    : Fase(2, jogador, 5, 10) {} // 5 inimigos (4 cogumelos + 1 Boitatá), até 10 obstáculos
 
 Fase_Boss::~Fase_Boss() {}
 
@@ -20,28 +20,59 @@ void Fase_Boss::iniciarFase() {
 
     criarLimitesArena();
 
-    // Poças de lava (1 a 2) e plataformas dividem o limite maxObstaculos
-    int numLavas = sortear(1, 2);
-    gerarPlataformasAleatorias(maxObstaculos - numLavas);   // 4..3 plataformas
+    // Mínimo 3 plataformas e mínimo 3 / máximo 5 lavas
+    int numPlats = sortear(3, 5);
+    int numLavas = sortear(3, 5);
 
-    // Poças no chão (topo do chão = y 560), longe do spawn do herói (x 100..140)
-    int livreA_partirDe = 200;
+    list<Plataforma*> plats = gerarPlataformasAleatorias(numPlats);
+
+    // Embaralha plataformas para sortear onde colocar lavas aéreas
+    list<Plataforma*> embaralhadas;
+    while (!plats.empty()) {
+        int idx = sortear(0, static_cast<int>(plats.size()) - 1);
+        auto it = std::next(plats.begin(), idx);
+        embaralhadas.push_back(*it);
+        plats.erase(it);
+    }
+    plats = embaralhadas;
+
+    list<Plataforma*> fixas;
+    auto itPlat = plats.begin();
+    int livreChaoX = 200; // longe do spawn do jogador (x 100..160)
+
     for (int i = 0; i < numLavas; ++i) {
-        int largura = sortear(60, 100);
-        int restantes = numLavas - i - 1;
-        // reserva espaço para as poças que ainda faltam
-        int xMaximo = 760 - largura - restantes * 160;
-        int x = sortear(livreA_partirDe, xMaximo);
+        // Decide se a lava vai em uma plataforma ou no chão
+        bool naPlataforma = (itPlat != plats.end()) && (sortear(0, 1) == 1);
 
-        criarPlataforma(x, 548, largura, 12, new Lava());
-        livreA_partirDe = x + largura + 60;   // 60 px de vão até a próxima
+        if (naPlataforma) {
+            Plataforma* platAtual = *itPlat++;
+            fixas.push_back(platAtual); // plataforma com lava fica parada
+
+            sf::FloatRect b = platAtual->getForma()->getGlobalBounds();
+            int larguraLava = std::min(80, static_cast<int>(b.size.x) - 20);
+            int xLava = static_cast<int>(b.position.x + (b.size.x - larguraLava) / 2.f);
+
+            criarPlataforma(static_cast<float>(xLava), b.position.y - 12.f,
+                            larguraLava, 12, new Lava());
+        } else {
+            int larguraLava = sortear(55, 85);
+            int xMax = std::max(livreChaoX, 740 - larguraLava);
+            int xLava = sortear(livreChaoX, xMax);
+
+            criarPlataforma(static_cast<float>(xLava), 548.f,
+                            larguraLava, 12, new Lava());
+
+            livreChaoX = std::min(680, xLava + larguraLava + 45);
+        }
     }
 
-    // Capangas patrulhando o chão
-    criarCapanga(250.0f, 510.0f);
-    criarCapanga(550.0f, 510.0f);
+    // Plataformas sem lava podem se mover
+    tornarPlataformasMoveis(plats, fixas);
 
-    // Chefão
+    // 4 Cogumelos espalhados entre chão e plataformas
+    espalharCapangas(4, plats);
+
+    // Chefão Boitatá
     Boitata* boss = new Boitata();
     boss->setPosicao(600.0f, 200.0f);
     boss->definirAlvo(pJogador);
@@ -52,33 +83,19 @@ void Fase_Boss::iniciarFase() {
     }
     pFisica->incluirProjetil(boss->getProjetil());
 }
+
 void Fase_Boss::executar() {
     if (pJogador == nullptr || !pJogador->estaVivo()) return;
 
-    pJogador->executar();
-
-    bool bossDerrotado = true;
-    for (CriaturaHostil* inimigo : listaInimigos) {
-        if (inimigo != nullptr && inimigo->estaVivo()) {
-            inimigo->executar();
-            bossDerrotado = false;
-        }
-    }
-
+    listaEntidades.percorrer();
     pFisica->executar();
-
     desenhar();
-    for (CriaturaHostil* inimigo : listaInimigos) {
-        Boitata* boss = dynamic_cast<Boitata*>(inimigo);
-        if (boss != nullptr && boss->getProjetil()->estaAtivo()) {
-            boss->getProjetil()->desenhar();
-        }
-    }
 
-    if (bossDerrotado) {
+    if (todosInimigosMortos())
         concluida = true;
-    }
 }
 
-
-void Fase_Boss::carregar() { std::cout << "[CARREGAR] Fase 2 carregada.\n"; }
+void Fase_Boss::carregar() {
+    numeroFase = 2;
+    carregarArquivos("saves/");
+}

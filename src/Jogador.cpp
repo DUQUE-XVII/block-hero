@@ -143,9 +143,9 @@ void Jogador::pararSubida()
     velocidadeY = 0.f;
 }
 
-void Jogador::reduzirVelocidade()
+void Jogador::reduzirVelocidade(int i)
 {
-    velocidade = 2.f;
+    velocidade = i;
 }
 
 void Jogador::restaurarVelocidade()
@@ -161,4 +161,24 @@ int Jogador::getPontos() const
 void Jogador::adicionarPontos(int p)
 {
     pontos += p;
+}
+
+void Jogador::reiniciar()
+{
+    vidas = 30;
+    pontos = 0;
+    velocidadeX = 0.f;
+    velocidadeY = 0.f;
+    noChao = true;
+    teclaCimaAnterior = false;
+    restaurarVelocidade();
+}
+
+void Jogador::setEstado(float vx, float vy, int v, int pts)
+{
+    velocidadeX = vx;
+    velocidadeY = vy;
+    vidas = v;
+    pontos = pts;
+    noChao = false;
 }

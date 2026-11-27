@@ -58,3 +58,12 @@ void Projetil_Acido::salvar()
                << " " << dano
                << " " << ativo;
 }
+
+void Projetil_Acido::restaurar(float px, float py, float vx, bool isAtivo)
+{
+    x = px;
+    y = py;
+    velX = vx;
+    ativo = isAtivo;
+    retangulo->setPosition({x, y});
+}

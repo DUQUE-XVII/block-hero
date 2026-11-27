@@ -29,23 +29,29 @@ class Jogador : public Personagem {
 
         float getX() const;
         float getY() const;
+
         float getVelocidadeY() const;
         float getYAnterior() const;
 
         void setX(float novoX);
         void setY(float novoY);
+
         void pararQueda();
+        void setEstado(float vx, float vy, int v, int pts);
 
         void receberDano(int dano);
         void quicar();
+
         void arremessar(float direcaoX);
         bool estaVivo();
 
-        void reduzirVelocidade();
+        void reduzirVelocidade(int i);
         void restaurarVelocidade();
 
         int  getPontos() const;
         void adicionarPontos(int p);
+
         void pararSubida();
+        void reiniciar();
 };
 

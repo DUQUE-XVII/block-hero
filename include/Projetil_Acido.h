@@ -21,4 +21,5 @@ public:
     void desativar();
     bool estaAtivo() const;
     int getDano() const;
+    void restaurar(float px, float py, float vx, bool isAtivo);
 };

@@ -1,33 +1,31 @@
-#include    "Fase.h"
-#include    "Boitata.h"
-#include    "Planta_Acida.h"
-#include    "Lama.h"
-#include    "Lava.h"
+#include "Fase.h"
+#include "Boitata.h"
+#include "Planta_Acida.h"
+#include "Projetil_Acido.h"
+#include "Lama.h"
+#include "Lava.h"
 
-Fase::Fase(int num, Jogador* jogador,int limiteInimigos, int limiteObstaculos)
+Fase::Fase(int num, Jogador* jogador, int limiteInimigos, int limiteObstaculos)
     : numeroFase(num),
       concluida(false),
       maxInimigos(limiteInimigos),
       maxObstaculos(limiteObstaculos),
+      numInimigos(0),
+      numObstaculos(0),
       pJogador(jogador)
 {
     pFisica = new Gerenciador_CL();
 }
 
 Fase::~Fase() {
-    delete pFisica;
-    pFisica = nullptr;
-
-    for (CriaturaHostil* inimigo : listaInimigos) {
-        delete inimigo;
+    listaEntidades.limpar();
+    if (pFisica != nullptr) {
+        pFisica->destruirEntidades(); // deleta obstáculos e inimigos, poupando pJogador
+        delete pFisica;
+        pFisica = nullptr;
     }
-    listaInimigos.clear();
-
-    for (Obstaculo* plat : listaPlataformas) {
-        delete plat;
-    }
-    listaPlataformas.clear();
 }
+
 std::mt19937& Fase::geradorAleatorio()
 {
     static std::mt19937 gerador{std::random_device{}()};
@@ -40,98 +38,125 @@ int Fase::sortear(int minimo, int maximo)
 }
 
 void Fase::criarLimitesArena() {
-    // Mesmas bordas usadas originalmente em Jogo.cpp (janela 800x600)
-    Plataforma* chao = new Plataforma(0, 560, 800, 40);
-    Plataforma* teto = new Plataforma(0, 0, 800, 20);
-    Plataforma* paredeEsquerda = new Plataforma(0, 0, 20, 600);
-    Plataforma* paredeDireita = new Plataforma(780, 0, 20, 600);
+    Obstaculo* limites[] = {
+        new Plataforma(0, 560, 800, 40),    // chão
+        new Plataforma(0, 0, 800, 20),      // teto
+        new Plataforma(0, 0, 20, 600),      // parede esquerda
+        new Plataforma(780, 0, 20, 600)     // parede direita
+    };
 
-    listaPlataformas.push_back(chao);
-    listaPlataformas.push_back(teto);
-    listaPlataformas.push_back(paredeEsquerda);
-    listaPlataformas.push_back(paredeDireita);
-
-    for (Obstaculo* p : listaPlataformas) {
+    for (Obstaculo* p : limites) {
         pFisica->incluirObstaculo(p);
         listaEntidades.incluir(p);
     }
 }
 
 void Fase::desenhar() {
-    if (pJogador != nullptr && pJogador->estaVivo()) {
-        pJogador->desenhar();
-    }
-
-    for (CriaturaHostil* inimigo : listaInimigos) {
-        if (inimigo != nullptr && inimigo->estaVivo()) {
-            inimigo->desenhar();
-        }
-    }
-
-    for (Obstaculo* plat : listaPlataformas) {
-        if (plat != nullptr) {
-            plat->desenhar();
-        }
-    }
+    if (pFisica != nullptr)
+        pFisica->desenharEntidades();
 
     if (pGG != nullptr && pJogador != nullptr) {
         pGG->desenharTexto("Pontos: " + std::to_string(pJogador->getPontos()),
                            30.f, 28.f);
     }
 }
-void Fase::criarCapanga(float x, float y)
-{
-     Capanga_Cogumelo* capanga = new Capanga_Cogumelo();
 
+void Fase::criarCapanga(float x, float y, float limEsq, float limDir)
+{
+    Capanga_Cogumelo* capanga = new Capanga_Cogumelo();
     capanga->setPosicao(x, y);
+    capanga->definirLimitesPatrulha(limEsq, limDir);
 
     if (!registrarInimigo(capanga))
         delete capanga;
 }
-void Fase::criarPlataforma(float x, float y, int largura, int altura,
-    Obstaculo* plataforma)
+
+void Fase::espalharCapangas(int quantidade, const list<Plataforma*>& plats)
 {
-    // Os quatro limites da arena não contam como obstáculos adicionais.
-    if (listaPlataformas.size() - 4 >= maxObstaculos)
+    const float larguraCogumelo = 44.f;
+    const float alturaCogumelo  = 50.f;
+
+    for (int i = 0; i < quantidade; ++i)
+    {
+        // 50% de chance de ir em plataforma (se houver), 50% de ir no chão
+        bool emPlataforma = !plats.empty() && (sortear(0, 1) == 1);
+
+        if (emPlataforma)
+        {
+            int idx = sortear(0, static_cast<int>(plats.size()) - 1);
+            Plataforma* p = *std::next(plats.begin(), idx);
+            sf::FloatRect b = p->getForma()->getGlobalBounds();
+
+            float xMin = b.position.x + 4.f;
+            float xMax = b.position.x + b.size.x - larguraCogumelo - 4.f;
+            float xSpawn = (xMax > xMin)
+                ? static_cast<float>(sortear(static_cast<int>(xMin), static_cast<int>(xMax)))
+                : b.position.x + (b.size.x - larguraCogumelo) / 2.f;
+
+            criarCapanga(xSpawn, b.position.y - alturaCogumelo,
+                         b.position.x, b.position.x + b.size.x);
+        }
+        else
+        {
+            // Espalhado pelo chão (longe do spawn inicial do herói em x=100..180)
+            float xSpawn = static_cast<float>(sortear(200, 720));
+            criarCapanga(xSpawn, 560.f - alturaCogumelo, 25.f, 775.f);
+        }
+    }
+}
+
+void Fase::criarPlataforma(float x, float y, int largura, int altura,
+                           Obstaculo* plataforma)
+{
+    if (numObstaculos >= maxObstaculos)
         return;
 
-     plataforma->getForma()->setSize({
+    plataforma->getForma()->setSize({
         static_cast<float>(largura),
         static_cast<float>(altura)
     });
-    plataforma->getForma()->setPosition({
-        static_cast<float>(x),
-        static_cast<float>(y)
-    });
+    plataforma->setPosicao(x, y);
 
-
-    listaPlataformas.push_back(plataforma);
-
+    ++numObstaculos;
     pFisica->incluirObstaculo(plataforma);
-
     listaEntidades.incluir(plataforma);
 }
 
-vector<Plataforma*> Fase::gerarPlataformasAleatorias(int quantidade)
+bool Fase::registrarInimigo(CriaturaHostil* inimigo)
+{
+    if (inimigo == nullptr || numInimigos >= maxInimigos)
+        return false;
+
+    ++numInimigos;
+    pFisica->incluirInimigos(inimigo);
+    listaEntidades.incluir(inimigo);
+
+    return true;
+}
+
+bool Fase::todosInimigosMortos() const
+{
+    return (pFisica != nullptr) ? pFisica->todosInimigosMortos() : true;
+}
+
+list<Plataforma*> Fase::gerarPlataformasAleatorias(int quantidade)
 {
     auto sorteia = [&](int a, int b) { return sortear(a, b); };
 
-
-    const int andares[3] = {440, 330, 220}; // topo de cada andar
+    const int andares[3] = {425, 290, 155};
     const int espessura  = 20;
-    const int xMin = 40, xMax = 760;        // dentro das paredes (20..780)
-    const int folga   = 60;                 // vão mínimo no mesmo andar
-    const int alcance = 110;                // distância máx. para subir de andar
+    const int xMin = 40, xMax = 760;
+    const int folga   = 60;
+    const int alcance = 110;
 
     struct Dados { int andar, x, largura; };
-    vector<Dados> feitas;
-    vector<Plataforma*> criadas;
+    list<Dados> feitas;
+    list<Plataforma*> criadas;
     int maiorAndar = -1;
 
-    for (int tentativa = 0; tentativa < 300 && (int)criadas.size() < quantidade; ++tentativa)
+    for (int tentativa = 0; tentativa < 300 && static_cast<int>(criadas.size()) < quantidade; ++tentativa)
     {
-        // Respeita o limite de obstáculos (os 4 primeiros são as bordas da arena)
-        if (static_cast<int>(listaPlataformas.size()) - 4 >= maxObstaculos)
+        if (numObstaculos >= maxObstaculos)
             break;
 
         int andar   = sorteia(0, std::min(maiorAndar + 1, 2));
@@ -144,8 +169,8 @@ vector<Plataforma*> Fase::gerarPlataformasAleatorias(int quantidade)
         for (const Dados& d : feitas)
         {
             int vao = std::max(x - (d.x + d.largura), d.x - (x + largura));
-            if (d.andar == andar && vao < folga)           { ok = false; break; }
-            if (d.andar == andar - 1 && vao <= alcance)    temApoio = true;
+            if (d.andar == andar && vao < folga)        { ok = false; break; }
+            if (d.andar == andar - 1 && vao <= alcance) temApoio = true;
         }
         if (!ok || !temApoio)
             continue;
@@ -159,74 +184,198 @@ vector<Plataforma*> Fase::gerarPlataformasAleatorias(int quantidade)
     return criadas;
 }
 
-bool Fase::registrarInimigo(CriaturaHostil* inimigo)
+Jogador* Fase::getJogador() const { return pJogador; }
+int Fase::getNumeroFase() const { return numeroFase; }
+bool Fase::estaConcluida() const { return concluida; }
+
+void Fase::salvar(const std::string& pasta)
 {
-    if (inimigo == nullptr || listaInimigos.size() >= maxInimigos)
+    std::filesystem::create_directories(pasta);
+
+    // 4. fase.txt (metadados da fase atual)
+    std::ofstream arqFase(pasta + "fase.txt");
+    if (arqFase.is_open())
+    {
+        arqFase << numeroFase << " " << concluida << "\n";
+    }
+
+    if (pFisica != nullptr)
+        pFisica->salvarArquivos(pasta);
+}
+
+bool Fase::carregarArquivos(const std::string& pasta)
+{
+    std::ifstream arqJog(pasta + "jogador.txt");
+    std::ifstream arqObs(pasta + "obstaculos.txt");
+    std::ifstream arqIni(pasta + "inimigos.txt");
+
+    if (!arqJog.is_open() || !arqObs.is_open() || !arqIni.is_open())
         return false;
 
-    listaInimigos.push_back(inimigo);
-    pFisica->incluirInimigos(inimigo);
-    listaEntidades.incluir(inimigo);
+    // Limpa o estado atual da fase antes de recriar tudo do arquivo
+    listaEntidades.limpar();
+    if (pFisica != nullptr)
+        pFisica->destruirEntidades();
+
+    numInimigos = 0;
+    numObstaculos = 0;
+
+    // 1. Carrega o Jogador (ordem salva em Jogador::salvar)
+    if (pJogador != nullptr)
+    {
+        float jx, jy, vx, vy;
+        int vidas, pontos;
+
+        if (arqJog >> jx >> jy >> vidas >> pontos >> vx >> vy)
+        {
+            pJogador->setX(jx);
+            pJogador->setY(jy);
+            pJogador->setEstado(vx, vy, vidas, pontos);
+
+            pFisica->getJogador(pJogador);
+            listaEntidades.incluir(pJogador);
+        }
+    }
+
+    // 2. Carrega os Obstáculos (limites da arena, plataformas, lamas e lavas)
+    std::string tipo;
+    while (arqObs >> tipo)
+    {
+        float ox, oy;
+        bool dano;
+        arqObs >> ox >> oy >> dano;
+
+        if (tipo == "PLATAFORMA")
+        {
+            int larg, alt, dir;
+            bool movel;
+            float yBase, amp, vel;
+            arqObs >> larg >> alt >> movel >> yBase >> amp >> vel >> dir;
+
+            Plataforma* p = new Plataforma(static_cast<int>(ox), static_cast<int>(oy), larg, alt);
+            if (movel)
+                p->configurarMovel(movel, yBase, amp, vel, dir);
+
+            pFisica->incluirObstaculo(p);
+            listaEntidades.incluir(p);
+        }
+        else if (tipo == "LAMA")
+        {
+            float larg, alt;
+            arqObs >> larg >> alt;
+
+            Lama* l = new Lama();
+            l->getForma()->setSize({larg, alt});
+            l->setPosicao(ox, oy);
+
+            pFisica->incluirObstaculo(l);
+            listaEntidades.incluir(l);
+        }
+        else if (tipo == "LAVA")
+        {
+            int danoLava;
+            float larg, alt;
+            arqObs >> danoLava >> larg >> alt;
+
+            Lava* lv = new Lava();
+            lv->getForma()->setSize({larg, alt});
+            lv->setPosicao(ox, oy);
+
+            pFisica->incluirObstaculo(lv);
+            listaEntidades.incluir(lv);
+        }
+    }
+
+    // 3. Carrega os Inimigos e o estado de seus projéteis
+    while (arqIni >> tipo)
+    {
+        float ix, iy;
+        int vidas;
+        arqIni >> ix >> iy >> vidas;
+
+        if (tipo == "CAPANGA")
+        {
+            int dir;
+            float limEsq, limDir;
+            arqIni >> dir >> limEsq >> limDir;
+
+            Capanga_Cogumelo* c = new Capanga_Cogumelo();
+            c->setPosicao(ix, iy);
+            c->setEstado(vidas, dir);
+            c->definirLimitesPatrulha(limEsq, limDir);
+            registrarInimigo(c);
+        }
+        else if (tipo == "BOITATA" || tipo == "PLANTA")
+        {
+            int contTempo, projDano;
+            float px, py, pvx;
+            bool projAtivo;
+            arqIni >> contTempo >> px >> py >> pvx >> projDano >> projAtivo;
+
+            if (tipo == "BOITATA")
+            {
+                Boitata* b = new Boitata();
+                b->setPosicao(ix, iy);
+                b->setEstado(vidas, contTempo);
+                b->definirAlvo(pJogador);
+                b->getProjetil()->restaurar(px, py, pvx, projAtivo);
+
+                registrarInimigo(b);
+                pFisica->incluirProjetil(b->getProjetil());
+            }
+            else
+            {
+                Planta_Acida* pl = new Planta_Acida();
+                pl->setPosicao(ix, iy);
+                pl->setEstado(vidas, contTempo);
+                pl->definirAlvo(pJogador);
+                pl->getProjetil()->restaurar(px, py, pvx, projAtivo);
+
+                registrarInimigo(pl);
+                pFisica->incluirProjetil(pl->getProjetil());
+            }
+        }
+    }
 
     return true;
 }
 
-Jogador* Fase::getJogador() const { return pJogador; }
-
-int Fase::getNumeroFase() const { return numeroFase; }
-
-bool Fase::estaConcluida() const { return concluida; }
-void Fase::salvar(std::ostream& arquivo)
+void Fase::tornarPlataformasMoveis(const list<Plataforma*>& plats,
+                                   const list<Plataforma*>& fixas)
 {
-    arquivo << "FASE " << numeroFase << "\n";
-    arquivo << "CONCLUIDA " << concluida << "\n";
+    const float alturaHeroi = (pJogador != nullptr)
+        ? pJogador->getForma()->getSize().y : 40.f;
+    const float folgaMinima = alturaHeroi + 15.f;
+    const float amplitudeMax = 40.f;
 
-    // Salvar jogador
-    if (pJogador != nullptr)
+    for (Plataforma* p : plats)
     {
-        pJogador->salvar();
-        arquivo << "JOGADOR " << pJogador->getDadosSalvos() << "\n";
-    }
-
-    // Quantidade de obstáculos
-    arquivo << "OBSTACULOS " << listaPlataformas.size() << "\n";
-
-    for (Obstaculo* obstaculo : listaPlataformas)
-    {
-        if (obstaculo == nullptr)
+        if (std::find(fixas.begin(), fixas.end(), p) != fixas.end())
             continue;
 
-        obstaculo->salvar();
+        sf::FloatRect a = p->getForma()->getGlobalBounds();
+        float baixoAcima = 20.f;
 
-        if (dynamic_cast<Lava*>(obstaculo))
-            arquivo << "LAVA ";
-        else if (dynamic_cast<Lama*>(obstaculo))
-            arquivo << "LAMA ";
-        else if (dynamic_cast<Plataforma*>(obstaculo))
-            arquivo << "PLATAFORMA ";
+        for (Obstaculo* o : pFisica->getObstaculos())
+        {
+            Plataforma* q = dynamic_cast<Plataforma*>(o);
+            if (q == nullptr || q == p) continue;
 
-        arquivo << obstaculo->getDadosSalvos() << "\n";
-    }
+            sf::FloatRect b = q->getForma()->getGlobalBounds();
+            bool sobrepoeX = a.position.x < b.position.x + b.size.x &&
+                             b.position.x < a.position.x + a.size.x;
+            float baixoQ = b.position.y + b.size.y;
 
-    // Quantidade de inimigos
-    arquivo << "INIMIGOS " << listaInimigos.size() << "\n";
+            if (sobrepoeX && baixoQ <= a.position.y)
+                baixoAcima = std::max(baixoAcima, baixoQ);
+        }
 
-    for (CriaturaHostil* inimigo : listaInimigos)
-    {
-        if (inimigo == nullptr)
+        float folgaAcima = a.position.y - baixoAcima;
+        float amplitude  = std::min(amplitudeMax, folgaAcima - folgaMinima);
+        if (amplitude < 15.f)
             continue;
 
-        inimigo->salvar();
-
-        if (dynamic_cast<Capanga_Cogumelo*>(inimigo))
-            arquivo << "CAPANGA ";
-        else if (dynamic_cast<Boitata*>(inimigo))
-            arquivo << "BOITATA ";
-        else if (dynamic_cast<Planta_Acida*>(inimigo))
-            arquivo << "PLANTA ";
-
-        arquivo << inimigo->getDadosSalvos() << "\n";
+        float velocidade = sortear(5, 12) / 10.f;
+        p->tornarMovel(amplitude, velocidade);
     }
 }
-
-vector<CriaturaHostil*> Fase::getInimigos() const { return listaInimigos; }

@@ -14,6 +14,17 @@ string Entidade::getDadosSalvos() const
     return Salvamento.str();
 }
 
+void Entidade::setPosicao(float novoX, float novoY)
+{
+    x = novoX;
+    y = novoY;
+
+    retangulo->setPosition({
+        novoX,
+        novoY
+    });
+}
+
 void Entidade::salvarDataBuffer()
 {
     Salvamento.str("");

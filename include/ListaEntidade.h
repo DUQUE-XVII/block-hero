@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "Lista.h"
@@ -45,4 +44,3 @@ public:
         return LEs.vazia();
     }
 };
-

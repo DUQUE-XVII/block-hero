@@ -14,32 +14,17 @@ private:
 
     public:
         Elemento() : pProx(nullptr) {}
-
         ~Elemento() = default;
 
-        void incluir(const TE& p)
-        {
-            pInfo = p;
-        }
-
-        void setProx(Elemento<TE>* p)
-        {
-            pProx = p;
-        }
-
-        Elemento<TE>* getProx() const
-        {
-            return pProx;
-        }
-
-        TE getInfo() const
-        {
-            return pInfo;
-        }
+        void incluir(const TE& p) { pInfo = p; }
+        void setProx(Elemento<TE>* p) { pProx = p; }
+        Elemento<TE>* getProx() const { return pProx; }
+        TE getInfo() const { return pInfo; }
     };
 
     Elemento<TL>* pPrimeiro;
     Elemento<TL>* pUltimo;
+    int quantidade;
 
     // Impede cópia superficial da lista.
     Lista(const Lista&) = delete;
@@ -47,7 +32,7 @@ private:
 
 public:
 
-    Lista() : pPrimeiro(nullptr), pUltimo(nullptr) {}
+    Lista() : pPrimeiro(nullptr), pUltimo(nullptr), quantidade(0) {}
 
     ~Lista()
     {
@@ -57,7 +42,6 @@ public:
     void incluir(const TL& p)
     {
         Elemento<TL>* novo = new Elemento<TL>();
-
         novo->incluir(p);
 
         if(pPrimeiro == nullptr)
@@ -70,6 +54,7 @@ public:
             pUltimo->setProx(novo);
             pUltimo = novo;
         }
+        ++quantidade;
     }
 
     void limpar()
@@ -79,15 +64,16 @@ public:
         while(atual != nullptr)
         {
             Elemento<TL>* proximo = atual->getProx();
-
             delete atual;
-
             atual = proximo;
         }
 
         pPrimeiro = nullptr;
         pUltimo = nullptr;
+        quantidade = 0;
     }
+
+    int tamanho() const { return quantidade; }
 
     template <class Funcao>
     void percorrer(Funcao acao) const
@@ -97,7 +83,6 @@ public:
         while(atual != nullptr)
         {
             acao(atual->getInfo());
-
             atual = atual->getProx();
         }
     }
@@ -107,4 +92,3 @@ public:
         return pPrimeiro == nullptr;
     }
 };
-

@@ -6,8 +6,8 @@ Boitata::Boitata()
     : velocidadePerseguicao(1.5f),
       tempoRecargaFogo(120), // 120 quadros: aproximadamente 2 segundos a 60 FPS
       contadorTempoFogo(0),
-      pFogo(new Projetil_Acido()),
-      pontosAoMorrer(1000)
+      pFogo(new Projetil_Acido())
+
 {
     posX = 600.f;
     posY = 200.f;
@@ -15,6 +15,7 @@ Boitata::Boitata()
     y = posY;
     vidas = 100;
     danoContato = 5;
+    pontosAoMorrer = 1000;
 
     retangulo->setSize({97.f, 60.f});
     retangulo->setFillColor(sf::Color(190, 45, 35));
@@ -140,4 +141,10 @@ void Boitata::danificar(Jogador* pJogador)
 Projetil_Acido* Boitata::getProjetil() const
 {
     return pFogo;
+}
+
+void Boitata::setEstado(int v, int cont)
+{
+    vidas = v;
+    contadorTempoFogo = cont;
 }

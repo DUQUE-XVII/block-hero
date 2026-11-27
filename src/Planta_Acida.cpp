@@ -3,14 +3,15 @@
 #include "Jogador.h"
 
 Planta_Acida::Planta_Acida()
-    : tempoRecarga(90), contadorTempo(0), pAcido(new Projetil_Acido()),
-    pontosAoMorrer(150)
+    : tempoRecarga(90), contadorTempo(0), pAcido(new Projetil_Acido())
+
 {
     // A planta fica apoiada no chão (que começa em y = 560).
     x = 680.f;
     y = 510.f;
     vidas = 2;
     danoContato = 1;
+    pontosAoMorrer = 150;
 
     retangulo->setSize({47.f, 50.f});
     retangulo->setFillColor(sf::Color(30, 150, 45));
@@ -26,9 +27,12 @@ Planta_Acida::~Planta_Acida()
 
 void Planta_Acida::executar()
 {
-    if (!estaVivo())
+    if (!estaVivo() && pAcido->estaAtivo()){
+        pAcido->executar();
         return;
-
+    }
+    else if(!estaVivo())
+        return;
     // O projétil continua se movimentando mesmo depois de ser disparado.
     pAcido->executar();
 
@@ -78,4 +82,10 @@ void Planta_Acida::danificar(Jogador* pJogador)
 Projetil_Acido* Planta_Acida::getProjetil() const
 {
     return pAcido;
+}
+
+void Planta_Acida::setEstado(int v, int cont)
+{
+    vidas = v;
+    contadorTempo = cont;
 }

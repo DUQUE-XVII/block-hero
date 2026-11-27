@@ -56,11 +56,13 @@
 		<Unit filename="include/Lava.h" />
 		<Unit filename="include/Lista.h" />
 		<Unit filename="include/ListaEntidade.h" />
+		<Unit filename="include/Menu.h" />
 		<Unit filename="include/Obstaculo.h" />
 		<Unit filename="include/Personagem.h" />
 		<Unit filename="include/Planta_Acida.h" />
 		<Unit filename="include/Plataforma.h" />
 		<Unit filename="include/Projetil_Acido.h" />
+		<Unit filename="include/Ranking.h" />
 		<Unit filename="include/stdafx.h" />
 		<Unit filename="src/Boitata.cpp" />
 		<Unit filename="src/Capanga_Cogumelo.cpp" />
@@ -76,11 +78,13 @@
 		<Unit filename="src/Jogo.cpp" />
 		<Unit filename="src/Lama.cpp" />
 		<Unit filename="src/Lava.cpp" />
+		<Unit filename="src/Menu.cpp" />
 		<Unit filename="src/Obstaculo.cpp" />
 		<Unit filename="src/Personagem.cpp" />
 		<Unit filename="src/Planta_Acida.cpp" />
 		<Unit filename="src/Plataforma.cpp" />
 		<Unit filename="src/Projetil_Acido.cpp" />
+		<Unit filename="src/Ranking.cpp" />
 		<Unit filename="src/main.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
