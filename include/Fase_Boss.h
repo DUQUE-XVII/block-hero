@@ -1,22 +1,23 @@
-#ifndef FASE_BOSS_H
-#define FASE_BOSS_H
+#pragma once
 
-#include    "Fase.h"
-#include    "Lava.h"
-
+#include "Fase.h"
+#include "Boitata.h"
 
 class Fase_Boss : public Fase {
+private:
+    const int maxChefoes;
+    const int maxCogumelos;
+    int chefoesRestantes;
+    Boitata* chefaoAtual;
 
+    void invocarProximoChefao();
 
-    public:
-        Fase_Boss(Jogador* jogador);
-        ~Fase_Boss();
+public:
+    Fase_Boss(Jogador* jogador);
+    ~Fase_Boss();
 
-        void iniciarFase() override;
-        void executar() override;
-
-
-        void carregar() override;
+    void iniciarFase() override;
+    void executar() override;
+    void salvar(const std::string& pasta = "saves/") override;
+    void carregar() override;
 };
-
-#endif

@@ -354,24 +354,34 @@ void Fase::tornarPlataformasMoveis(const list<Plataforma*>& plats,
             continue;
 
         sf::FloatRect a = p->getForma()->getGlobalBounds();
-        float baixoAcima = 20.f;
+        float baixoAcima = 20.f;  // teto da arena
+        float topoAbaixo = 560.f; // chão da arena
 
         for (Obstaculo* o : pFisica->getObstaculos())
         {
-            Plataforma* q = dynamic_cast<Plataforma*>(o);
-            if (q == nullptr || q == p) continue;
+            if (o == nullptr || o == p) continue;
 
-            sf::FloatRect b = q->getForma()->getGlobalBounds();
+            sf::FloatRect b = o->getForma()->getGlobalBounds();
             bool sobrepoeX = a.position.x < b.position.x + b.size.x &&
                              b.position.x < a.position.x + a.size.x;
-            float baixoQ = b.position.y + b.size.y;
+            if (!sobrepoeX) continue;
 
-            if (sobrepoeX && baixoQ <= a.position.y)
-                baixoAcima = std::max(baixoAcima, baixoQ);
+            float baixoObs = b.position.y + b.size.y;
+            float basePlat = a.position.y + a.size.y;
+
+            // Obstáculo acima da plataforma
+            if (baixoObs <= a.position.y)
+                baixoAcima = std::max(baixoAcima, baixoObs);
+
+            // Obstáculo abaixo da plataforma (pega Lava no chão em y = 548 ou outra plataforma)
+            if (b.position.y >= basePlat)
+                topoAbaixo = std::min(topoAbaixo, b.position.y);
         }
 
-        float folgaAcima = a.position.y - baixoAcima;
-        float amplitude  = std::min(amplitudeMax, folgaAcima - folgaMinima);
+        float folgaAcima  = (a.position.y - baixoAcima) - folgaMinima;
+        float folgaAbaixo = (topoAbaixo - (a.position.y + a.size.y)) - 10.f; // 10px de margem antes da lava/chão
+
+        float amplitude = std::min({ amplitudeMax, folgaAcima, folgaAbaixo });
         if (amplitude < 15.f)
             continue;
 

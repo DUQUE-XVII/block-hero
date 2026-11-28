@@ -94,7 +94,7 @@ void Gerenciador_CL::colisaoinimigo()
         if (caiuSobre)
         {
             pJog1->setY(inimigo.position.y - jogador.size.y);
-            pInimigo->receberDano(2);
+            pInimigo->receberDano(100);
             pJog1->quicar();
 
             if (!pInimigo->estaVivo())
@@ -334,4 +334,5 @@ void Gerenciador_CL::executar()
     colisaoInimigoObstaculo();
     colisaoinimigo();
     colisaoProjetil();
+
 }

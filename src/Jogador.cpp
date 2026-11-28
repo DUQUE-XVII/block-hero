@@ -3,20 +3,21 @@
 
 
 Jogador::Jogador()
-    :   vidas(30),
+    :   vidas(60),
         pontos(0),
         velocidadeX(0),
         velocidadeY(0),
         yAnterior(0),
         noChao(true),
         teclaCimaAnterior(false)
+
 {
     x = 150;
     y = 200;
     xAnterior = x;
     yAnterior = y;
 
-    retangulo->setSize({60.f, 40.f});
+    retangulo->setSize({50.f, 40.f});
     retangulo->setFillColor(sf::Color::White);
     carregarTextura("assets/Jogador/Heroi.png");
     retangulo->setPosition({x, y});

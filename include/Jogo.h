@@ -12,11 +12,12 @@
 
 class Jogo {
 private:
-    enum class Estado {
+   enum class Estado {
         MENU,
         JOGANDO,
         PAUSADO,
-        RANKING
+        RANKING,
+        VITORIA
     };
 
     Jogador pJog1;
@@ -26,6 +27,7 @@ private:
     Ranking ranking;
     Fase* faseAtual;
     Estado estadoAtual;
+    sf::Clock relogioVitoria;
 
     bool teclaSalvarAnterior;
     bool teclaEscAnterior;

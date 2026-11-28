@@ -11,7 +11,7 @@ Capanga_Cogumelo::Capanga_Cogumelo()
     posY = 510.f;
     x = posX;
     y = posY;
-    vidas = 1;
+    vidas = 10;
     danoContato = 1;
     sf::Color marrom(139, 69, 19);
 

@@ -732,7 +732,7 @@
 1795740896 c:\users\joaol\desktop\meujogo\include\projetil_acido.h
 	"Entidade.h"
 
-1795743187 source:c:\users\joaol\desktop\meujogo\src\capanga_cogumelo.cpp
+1795825476 source:c:\users\joaol\desktop\meujogo\src\capanga_cogumelo.cpp
 	"Capanga_Cogumelo.h"
 	"Jogador.h"
 
@@ -750,7 +750,7 @@
 1795566220 source:c:\users\joaol\desktop\meujogo\src\entidade.cpp
 	"Entidade.h"
 
-1795742069 source:c:\users\joaol\desktop\meujogo\src\fase.cpp
+1795826916 source:c:\users\joaol\desktop\meujogo\src\fase.cpp
 	"Fase.h"
 	"Boitata.h"
 	"Planta_Acida.h"
@@ -1317,7 +1317,7 @@
 	<string_view>
 	<cstdint>
 
-1795743187 source:c:\users\joaol\desktop\meujogo\src\gerenciador_cl.cpp
+1795828662 source:c:\users\joaol\desktop\meujogo\src\gerenciador_cl.cpp
 	"Gerenciador_CL.h"
 	"Projetil_Acido.h"
 	"Lava.h"
@@ -1341,38 +1341,38 @@
 
 1795729516 c:\users\joaol\desktop\meujogo\include\lista.h
 
-1795742069 source:c:\users\joaol\desktop\meujogo\src\fase_boss.cpp
+1795826151 source:c:\users\joaol\desktop\meujogo\src\fase_boss.cpp
 	"Fase_Boss.h"
-	"Boitata.h"
 	"Projetil_Acido.h"
+	"Lava.h"
 	<iostream>
 
-1795484709 c:\users\joaol\desktop\meujogo\include\fase_boss.h
+1795825476 c:\users\joaol\desktop\meujogo\include\fase_boss.h
 	"Fase.h"
-	"Lava.h"
+	"Boitata.h"
 
-1795742069 source:c:\users\joaol\desktop\meujogo\src\fase_forest.cpp
+1795827542 source:c:\users\joaol\desktop\meujogo\src\fase_forest.cpp
 	"Fase_Forest.h"
-	"Capanga_Cogumelo.h"
 	"Planta_Acida.h"
 	"Projetil_Acido.h"
 	"Lama.h"
 	<iostream>
 
-1795484709 c:\users\joaol\desktop\meujogo\include\fase_forest.h
+1795827542 c:\users\joaol\desktop\meujogo\include\fase_forest.h
+	"Fase.h"
 	"Fase.h"
 
 1795741124 c:\users\joaol\desktop\meujogo\include\planta_acida.h
 	"CriaturaHostil.h"
 
-1795740896 source:c:\users\joaol\desktop\meujogo\src\jogador.cpp
+1795828572 source:c:\users\joaol\desktop\meujogo\src\jogador.cpp
 	"Jogador.h"
 	"Plataforma.h"
 
-1795742273 source:c:\users\joaol\desktop\meujogo\src\jogo.cpp
+1795828481 source:c:\users\joaol\desktop\meujogo\src\jogo.cpp
 	"Jogo.h"
 
-1795742273 c:\users\joaol\desktop\meujogo\include\jogo.h
+1795828051 c:\users\joaol\desktop\meujogo\include\jogo.h
 	"stdafx.h"
 	"GerenciadorGrafico.h"
 	"Jogador.h"
@@ -1392,7 +1392,7 @@
 1794667131 source:c:\users\joaol\desktop\meujogo\src\personagem.cpp
 	"Personagem.h"
 
-1795740897 source:c:\users\joaol\desktop\meujogo\src\planta_acida.cpp
+1795825476 source:c:\users\joaol\desktop\meujogo\src\planta_acida.cpp
 	"Planta_Acida.h"
 	"Projetil_Acido.h"
 	"Jogador.h"

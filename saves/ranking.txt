@@ -1,5 +1,5 @@
-Heroi 1000
-Heroi 900
-Heroi 900
-Heroi 800
-Heroi 700
+Heroi 4300
+Heroi 4100
+Heroi 3300
+Heroi 3200
+Heroi 3100

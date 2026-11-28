@@ -9,7 +9,7 @@ Planta_Acida::Planta_Acida()
     // A planta fica apoiada no chão (que começa em y = 560).
     x = 680.f;
     y = 510.f;
-    vidas = 2;
+    vidas = 20;
     danoContato = 1;
     pontosAoMorrer = 150;
 

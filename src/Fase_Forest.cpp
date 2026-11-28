@@ -1,19 +1,24 @@
 #include "Fase_Forest.h"
-#include "Capanga_Cogumelo.h"
 #include "Planta_Acida.h"
 #include "Projetil_Acido.h"
 #include "Lama.h"
 #include <iostream>
 
 Fase_Forest::Fase_Forest(Jogador* jogador)
-    : Fase(1, jogador, 5, 10) {} // 5 inimigos (3 cogumelos + 2 plantas), até 10 obstáculos
+    : Fase(1, jogador, 10, 15), // comporta 4 bordas + até 5 plataformas + até 5 lamas
+      maxCogumelos(5),
+      maxPlantas(4)
+{
+}
 
 Fase_Forest::~Fase_Forest() {}
 
-void Fase_Forest::iniciarFase() {
+void Fase_Forest::iniciarFase()
+{
     std::cout << "[FASE 1] Iniciando a Floresta...\n";
 
-    if (pJogador != nullptr) {
+    if (pJogador != nullptr)
+    {
         pJogador->setX(100.0f);
         pJogador->setY(500.0f);
         pFisica->getJogador(pJogador);
@@ -22,15 +27,15 @@ void Fase_Forest::iniciarFase() {
 
     criarLimitesArena();
 
-    // Mínimo 3 plataformas e mínimo 3 / máximo 5 lamas
     int numPlats = sortear(3, 5);
     int numLamas = sortear(3, 5);
 
     list<Plataforma*> plats = gerarPlataformasAleatorias(numPlats);
 
-    // Embaralha as plataformas para sortear onde caem as lamas
+    // Embaralha as plataformas para distribuir lamas e plantas de forma variada
     list<Plataforma*> embaralhadas;
-    while (!plats.empty()) {
+    while (!plats.empty())
+    {
         int idx = sortear(0, static_cast<int>(plats.size()) - 1);
         auto it = std::next(plats.begin(), idx);
         embaralhadas.push_back(*it);
@@ -40,66 +45,85 @@ void Fase_Forest::iniciarFase() {
 
     list<Plataforma*> fixas;
     auto itPlat = plats.begin();
-    int livreChaoX = 200; // evita o spawn do jogador no chão
+    int livreChaoX = 180;
 
-    for (int i = 0; i < numLamas; ++i) {
-        // Decide se a lama vai na plataforma (enquanto houver livre) ou no chão
-        bool colocarNoChao = (itPlat == plats.end()) || (sortear(0, 1) == 1);
+    // 1. Cria de 3 a 5 Lamas (nas plataformas ou espaçadas no chão)
+    for (int i = 0; i < numLamas; ++i)
+    {
+        bool cabeNoChao = (livreChaoX <= 650);
+        bool temPlatLivre = (itPlat != plats.end());
+        bool naPlataforma = temPlatLivre && (!cabeNoChao || sortear(0, 1) == 1);
 
-        if (!colocarNoChao) {
+        if (naPlataforma)
+        {
             Plataforma* platAtual = *itPlat++;
             fixas.push_back(platAtual);
 
             sf::FloatRect b = platAtual->getForma()->getGlobalBounds();
-            int larguraLama = std::max(30, static_cast<int>(b.size.x) - 20);
-            int xLama = static_cast<int>(b.position.x) + 10;
+            int larguraLama = std::min(80, static_cast<int>(b.size.x) - 20);
+            int xLama = static_cast<int>(b.position.x + (b.size.x - larguraLama) / 2.f);
 
             criarPlataforma(static_cast<float>(xLama), b.position.y - 10.f,
                             larguraLama, 10, new Lama());
-        } else {
-            // Lama no chão (topo do chão = y 560)
-            int larguraLama = sortear(60, 100);
-            int xMax = std::max(livreChaoX, 740 - larguraLama);
+        }
+        else
+        {
+            int larguraLama = sortear(55, 80);
+            int xMax = std::max(livreChaoX, 730 - larguraLama);
             int xLama = sortear(livreChaoX, xMax);
 
             criarPlataforma(static_cast<float>(xLama), 550.f,
                             larguraLama, 10, new Lama());
 
-            livreChaoX = std::min(680, xLama + larguraLama + 40);
+            livreChaoX = xLama + larguraLama + 35;
         }
     }
 
-    // 3 Cogumelos espalhados entre chão e plataformas
-    espalharCapangas(3, plats);
+    // 2. Cria de 3 a 4 Plantas Ácidas (nas plataformas livres restantes ou no chão)
+    int qtdPlantas = sortear(3, maxPlantas);
+    int livrePlantaChaoX = 240;
 
-    // 2 Plantas Ácidas (completando os 5 inimigos da Fase 1)
-    Planta_Acida* planta1 = new Planta_Acida();
-    planta1->setPosicao(680.0f, 510.0f);
-    planta1->definirAlvo(pJogador);
+    for (int i = 0; i < qtdPlantas; ++i)
+    {
+        Planta_Acida* planta = new Planta_Acida();
+        float altPlanta = planta->getForma()->getGlobalBounds().size.y;
+        float largPlanta = planta->getForma()->getGlobalBounds().size.x;
 
-    Planta_Acida* planta2 = new Planta_Acida();
-    planta2->definirAlvo(pJogador);
-    if (!plats.empty()) {
-        Plataforma* ultima = plats.back();
-        if (std::find(fixas.begin(), fixas.end(), ultima) == fixas.end())
-            fixas.push_back(ultima);
+        if (itPlat != plats.end())
+        {
+            Plataforma* platAtual = *itPlat++;
+            fixas.push_back(platAtual);
 
-        sf::FloatRect b  = ultima->getForma()->getGlobalBounds();
-        sf::Vector2f tam = planta2->getForma()->getSize();
+            sf::FloatRect b = platAtual->getForma()->getGlobalBounds();
+            float px = b.position.x + (b.size.x - largPlanta) / 2.f;
+            float py = b.position.y - altPlanta;
+            planta->setPosicao(px, py);
+        }
+        else
+        {
+            int xMax = std::max(livrePlantaChaoX, 720 - static_cast<int>(largPlanta));
+            float px = static_cast<float>(sortear(livrePlantaChaoX, xMax));
+            float py = 560.f - altPlanta;
+            planta->setPosicao(px, py);
 
-        // Se a plataforma já tiver lama, coloca a planta no canto direito; senão, centraliza
-        float xPlanta = b.position.x + b.size.x - tam.x - 5.f;
-        planta2->setPosicao(xPlanta, b.position.y - tam.y);
+            livrePlantaChaoX = std::min(680, static_cast<int>(px + largPlanta + 60.f));
+        }
+
+        planta->definirAlvo(pJogador);
+        if (registrarInimigo(planta))
+            pFisica->incluirProjetil(planta->getProjetil());
+        else
+            delete planta;
     }
 
+    // 3. Torna móveis apenas as plataformas que ficaram livres
     tornarPlataformasMoveis(plats, fixas);
 
-    if (!registrarInimigo(planta1)) delete planta1;
-    else pFisica->incluirProjetil(planta1->getProjetil());
-
-    if (!registrarInimigo(planta2)) delete planta2;
-    else pFisica->incluirProjetil(planta2->getProjetil());
+    // 4. Cria de 3 a 5 Capangas Cogumelo
+    int qtdCogumelos = sortear(3, maxCogumelos);
+    espalharCapangas(qtdCogumelos, plats);
 }
+
 
 void Fase_Forest::executar() {
     if (pJogador == nullptr || !pJogador->estaVivo()) return;

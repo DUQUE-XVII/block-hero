@@ -123,42 +123,39 @@ void Jogo::executar()
         }
         else if (estadoAtual == Estado::JOGANDO)
         {
-            if (faseAtual != nullptr)
+            if (escPressionado)
             {
-                // Apertar ESC pausa o jogo
-                if (escPressionado)
+                mensagemPausa.clear();
+                menuPausa.resetarEstado();
+                estadoAtual = Estado::PAUSADO;
+            }
+            else if (faseAtual != nullptr)
+            {
+                faseAtual->executar();
+
+                // 1. Se o jogador morreu, salva a pontuação e volta ao Menu
+                if (!pJog1.estaVivo())
                 {
-                    menuPausa.resetarEstado();
-                    mensagemPausa = "";
-                    estadoAtual = Estado::PAUSADO;
+                    ranking.adicionarPontuacao("Heroi", pJog1.getPontos());
+                    delete faseAtual;
+                    faseAtual = nullptr;
+                    menu.resetarEstado();
+                    estadoAtual = Estado::MENU;
                 }
-                else
+                // 2. Se concluiu a fase
+                else if (faseAtual->estaConcluida())
                 {
-                    // Atalho rápido (S) continua funcionando se quiser
-                    bool teclaS = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S);
-                    if (teclaS && !teclaSalvarAnterior)
-                    {
-                        faseAtual->salvar();
-                        std::cout << "[JOGO] Jogo salvo!\n";
-                    }
-                    teclaSalvarAnterior = teclaS;
-
-                    faseAtual->executar();
-
-                    if (faseAtual->estaConcluida() && faseAtual->getNumeroFase() == 1)
+                    if (faseAtual->getNumeroFase() == 1)
                     {
                         delete faseAtual;
                         faseAtual = new Fase_Boss(&pJog1);
                         faseAtual->iniciarFase();
                     }
-                    else if ((faseAtual->estaConcluida() && faseAtual->getNumeroFase() == 2) ||
-                             !pJog1.estaVivo())
+                    else
                     {
                         ranking.adicionarPontuacao("Heroi", pJog1.getPontos());
-                        delete faseAtual;
-                        faseAtual = nullptr;
-                        menu.resetarEstado();
-                        estadoAtual = Estado::MENU;
+                        relogioVitoria.restart();
+                        estadoAtual = Estado::VITORIA;
                     }
                 }
             }
@@ -212,6 +209,31 @@ void Jogo::executar()
                         estadoAtual = Estado::MENU;
                     }
                 }
+            }
+        }
+        else if (estadoAtual == Estado::VITORIA)
+        {
+            float tempoDecorrido = relogioVitoria.getElapsedTime().asSeconds();
+            int segundosRestantes = std::max(0, 10 - static_cast<int>(tempoDecorrido));
+
+            // Mantém a arena congelada ao fundo mostrando que o último Boitatá morreu
+            if (faseAtual != nullptr)
+                faseAtual->desenhar();
+
+            sf::RectangleShape fundoVitoria({800.f, 600.f});
+            fundoVitoria.setFillColor(sf::Color(0, 0, 0, 175));
+            pGG.getJanela().draw(fundoVitoria);
+
+            pGG.desenharTexto("VITORIA! ULTIMO BOITATA DERROTADO!", 145.f, 210.f, 28);
+            pGG.desenharTexto("Pontuacao Final: " + std::to_string(pJog1.getPontos()), 265.f, 275.f, 24);
+            pGG.desenharTexto("Voltando ao menu em " + std::to_string(segundosRestantes) + "s...", 255.f, 340.f, 20);
+
+            if (tempoDecorrido >= 10.0f)
+            {
+                delete faseAtual;
+                faseAtual = nullptr;
+                menu.resetarEstado();
+                estadoAtual = Estado::MENU;
             }
         }
 
